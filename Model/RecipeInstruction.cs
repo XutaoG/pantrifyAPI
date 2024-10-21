@@ -7,6 +7,9 @@ namespace Pantrify.API.Model
 	[Table(nameof(RecipeInstruction))]
 	public class RecipeInstruction
 	{
+		[Key]
+		public int Id { get; set; }
+
 		[Required]
 		public string Instruction { get; set; } = null!;
 
