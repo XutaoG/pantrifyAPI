@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Pantrify.API.Model
 {
@@ -13,9 +14,16 @@ namespace Pantrify.API.Model
 		public bool IsInCart { get; set; }
 
 		[Required]
-		public DateTime dateAdded { get; set; }
+		public DateTime DateAdded { get; set; }
 
-		[Required]
-		public DateTime dateExpired { get; set; }
+		public DateTime? DateExpired { get; set; }
+
+		[ForeignKey(nameof(User))] // Specifies property as foreign key
+		public int UserId { get; set; }
+
+		public Ingredient()
+		{
+			this.DateAdded = DateTime.UtcNow;
+		}
 	}
 }

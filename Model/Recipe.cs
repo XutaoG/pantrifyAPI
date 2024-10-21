@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Pantrify.API.Model
 {
@@ -30,6 +31,7 @@ namespace Pantrify.API.Model
 		// Collection navigation containing dependents
 		public RecipeImage Image { get; set; } = null!;
 
-
+		[ForeignKey(nameof(User))] // Specifies property as foreign key
+		public int UserId { get; set; }
 	}
 }

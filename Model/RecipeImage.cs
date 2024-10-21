@@ -21,6 +21,6 @@ namespace Pantrify.API.Model
 
 		// Reference navigation to principal
 		[JsonIgnore] // Prevent property from being serialized
-		public Recipe recipe { get; set; } = null!;
+		public Recipe Recipe { get; set; } = null!;
 	}
 }

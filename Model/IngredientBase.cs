@@ -9,5 +9,8 @@ namespace Pantrify.API.Model
 
 		[Required]
 		public string Name { get; set; } = null!;
+
+		[Required]
+		public string IngredientType { get; set; } = null!;
 	}
 }
