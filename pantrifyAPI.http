@@ -1,0 +1,6 @@
+@pantrifyAPI_HostAddress = http://localhost:5188
+
+GET {{pantrifyAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
