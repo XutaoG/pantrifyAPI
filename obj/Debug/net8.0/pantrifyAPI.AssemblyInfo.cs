@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("pantrifyAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+527e3431551637c9e48eaa1a361c16d6427f72bc")]
 [assembly: System.Reflection.AssemblyProductAttribute("pantrifyAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("pantrifyAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
