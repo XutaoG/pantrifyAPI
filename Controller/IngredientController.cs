@@ -79,5 +79,53 @@ namespace Pantrify.API.Controller
 			// 201
 			return CreatedAtAction(nameof(GetbyId), new { id = response.Id }, response);
 		}
+
+		[HttpPut]
+		[Route("{id}")]
+		public async Task<IActionResult> UpdateById([FromRoute] int id, [FromBody] UpdateIngredientDto updateIngredientDto)
+		{
+			// Validate model
+			if (!ModelState.IsValid)
+			{
+				// 400
+				return BadRequest(ModelState);
+			}
+
+			// Map Dto to model
+			Ingredient? ingredient = this.mapper.Map<Ingredient>(updateIngredientDto);
+
+			// Update model
+			ingredient = await this.ingredientRepository.UpdateById(id, ingredient);
+
+			// Check for existence
+			if (ingredient == null)
+			{
+				// 404
+				return NotFound();
+			}
+
+			// Map model to response Dto
+			IngredientResponseDto response = this.mapper.Map<IngredientResponseDto>(ingredient);
+
+			// 200
+			return Ok(response);
+		}
+
+		[HttpDelete]
+		[Route("{id}")]
+		public async Task<IActionResult> DeleteById([FromRoute] int id)
+		{
+			Ingredient? ingredient = await this.ingredientRepository.DeleteById(id);
+
+			// Check for existence
+			if (ingredient == null)
+			{
+				// 404
+				return NotFound();
+			}
+
+			// 204
+			return NoContent();
+		}
 	}
 }

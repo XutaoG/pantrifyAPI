@@ -11,6 +11,7 @@ namespace Pantrify.API.Mapping
 		{
 			// Ingredient
 			CreateMap<AddIngredientDto, Ingredient>();
+			CreateMap<UpdateIngredientDto, Ingredient>();
 			CreateMap<Ingredient, IngredientResponseDto>();
 		}
 	}
