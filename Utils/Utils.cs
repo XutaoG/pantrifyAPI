@@ -13,7 +13,7 @@ namespace Pantrify.API.Utils
 			return passwordHasher.HashPassword(user, password);
 		}
 
-		public static bool verifyPassword(string hashedPassword, string password)
+		public static bool VerifyPassword(string hashedPassword, string password)
 		{
 			PasswordVerificationResult res = passwordHasher.VerifyHashedPassword(user, hashedPassword, password);
 

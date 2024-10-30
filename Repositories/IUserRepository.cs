@@ -6,6 +6,6 @@ namespace Pantrify.API.Repositories
 	{
 		Task<User?> Create(User user);
 
-		Task<User?> AuthenticateUser(User user);
+		Task<User?> AuthenticateUser(string email, string password);
 	}
 }

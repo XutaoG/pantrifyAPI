@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Pantrify.API.Data;
 using Pantrify.API.Model;
+using Pantrify.API.Utils;
 
 namespace Pantrify.API.Repositories
 {
@@ -36,10 +37,10 @@ namespace Pantrify.API.Repositories
 			return user;
 		}
 
-		public async Task<User?> AuthenticateUser(User user)
+		public async Task<User?> AuthenticateUser(string email, string password)
 		{
 			User? foundUser = await this.authDbcontext.Users
-				.Where(u => u.Email.ToLower() == user.Email.ToLower())
+				.Where(u => u.Email.ToLower() == email.ToLower())
 				.FirstOrDefaultAsync();
 
 			// Check for existence
@@ -49,9 +50,9 @@ namespace Pantrify.API.Repositories
 			}
 
 			// Check if password matches
-			if (string.Equals(foundUser.PasswordHash, user.PasswordHash))
+			if (PasswordHasherService.VerifyPassword(foundUser.PasswordHash, password))
 			{
-				return user;
+				return foundUser;
 			}
 
 			return null;

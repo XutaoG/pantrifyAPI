@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Pantrify.API.Add.Dto
+namespace Pantrify.API.Dto.Auth
 {
-	public class SignUpDto
+	public class SignUpRequest
 	{
 		[Required]
 		public string Email { get; set; } = null!;

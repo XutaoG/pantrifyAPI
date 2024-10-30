@@ -18,5 +18,8 @@ namespace Pantrify.API.Model
 
 		[Required]
 		public string PasswordHash { get; set; } = null!;
+
+		[Required]
+		public bool EmailConfirmed { get; set; } = false;
 	}
 }
