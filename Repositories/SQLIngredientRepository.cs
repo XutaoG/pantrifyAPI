@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Pantrify.API.Data;
 using Pantrify.API.Model;
 
-namespace Pantrify.API.Repository
+namespace Pantrify.API.Repositories
 {
 	public class SQLIngredientRepository : IIngredientRepository
 	{

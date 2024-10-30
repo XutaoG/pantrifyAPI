@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Pantrify.API.Data;
 using Pantrify.API.Mapping;
-using Pantrify.API.Repository;
+using Pantrify.API.Model;
+using Pantrify.API.Repositories;
+using Pantrify.API.Utils;
 
 namespace Pantrify
 {
@@ -23,9 +25,14 @@ namespace Pantrify
 			{
 				options.UseSqlServer(builder.Configuration.GetConnectionString("PantrifyDbConnectionString"));
 			});
+			builder.Services.AddDbContext<AuthDbcontext>(options =>
+			{
+				options.UseSqlServer(builder.Configuration.GetConnectionString("PantrifyAuthDbConnectionString"));
+			});
 
 			// Add repositories to container
 			builder.Services.AddScoped<IIngredientRepository, SQLIngredientRepository>();
+			builder.Services.AddScoped<IUserRepository, SQLUserRepository>();
 
 			// Add AutoMapper to container
 			builder.Services.AddAutoMapper(typeof(AutoMapperProfile));

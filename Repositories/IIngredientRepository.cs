@@ -1,6 +1,6 @@
 using Pantrify.API.Model;
 
-namespace Pantrify.API.Repository
+namespace Pantrify.API.Repositories
 {
 	public interface IIngredientRepository
 	{
