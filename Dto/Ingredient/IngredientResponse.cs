@@ -1,4 +1,4 @@
-namespace Pantrify.API.Dto.Ingredient
+namespace Pantrify.API.Dto
 {
 	public class IngredientResponse
 	{

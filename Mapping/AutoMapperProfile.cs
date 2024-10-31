@@ -1,6 +1,6 @@
 using AutoMapper;
 using Pantrify.API.Add.Dto;
-using Pantrify.API.Dto.Ingredient;
+using Pantrify.API.Dto;
 using Pantrify.API.Models;
 
 namespace Pantrify.API.Mapping

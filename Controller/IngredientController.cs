@@ -2,7 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pantrify.API.Add.Dto;
-using Pantrify.API.Dto.Ingredient;
+using Pantrify.API.Dto;
 using Pantrify.API.Models;
 using Pantrify.API.Repositories;
 using Pantrify.API.Services;

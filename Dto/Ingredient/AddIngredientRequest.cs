@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Pantrify.API.Dto.Ingredient
+namespace Pantrify.API.Dto
 {
 	public class AddIngredientRequest
 	{
