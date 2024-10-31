@@ -20,7 +20,7 @@ namespace Pantrify.API.Repositories
 			return await this.pantrifyDbContext.Ingredients.Where(ing => ing.UserId == userId).ToListAsync();
 		}
 
-		public async Task<Ingredient?> GetbyId(int id)
+		public async Task<Ingredient?> GetById(int id)
 		{
 			return await this.pantrifyDbContext.Ingredients
 				.Where(ing => ing.Id == id)
@@ -41,7 +41,7 @@ namespace Pantrify.API.Repositories
 		public async Task<Ingredient?> UpdateById(int id, Ingredient ingredient)
 		{
 			// Check if ID exists
-			Ingredient? foundIngredient = await GetbyId(id);
+			Ingredient? foundIngredient = await GetById(id);
 
 			if (foundIngredient == null)
 			{
@@ -65,7 +65,7 @@ namespace Pantrify.API.Repositories
 		public async Task<Ingredient?> DeleteById(int id)
 		{
 			// Check if ID exists
-			Ingredient? foundIngredient = await GetbyId(id);
+			Ingredient? foundIngredient = await GetById(id);
 
 			if (foundIngredient == null)
 			{

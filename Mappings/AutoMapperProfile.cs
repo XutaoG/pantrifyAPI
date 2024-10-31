@@ -12,6 +12,18 @@ namespace Pantrify.API.Mapping
 			CreateMap<AddIngredientRequest, Ingredient>();
 			CreateMap<UpdateIngredientRequest, Ingredient>();
 			CreateMap<Ingredient, IngredientResponse>();
+
+			// Recipe Ingredient
+			CreateMap<AddRecipeIngredientRequest, RecipeIngredient>();
+			CreateMap<RecipeIngredient, RecipeIngredientResponse>();
+
+			// Recipe Instruction
+			CreateMap<AddRecipeInstructionRequest, RecipeInstruction>();
+			CreateMap<RecipeInstruction, RecipeInstructionResponse>();
+
+			// Recipe
+			CreateMap<AddRecipeRequest, Recipe>();
+			CreateMap<Recipe, RecipeResponse>();
 		}
 	}
 

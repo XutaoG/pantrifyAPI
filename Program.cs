@@ -32,6 +32,7 @@ namespace Pantrify
 			builder.Services.AddScoped<IIngredientRepository, SQLIngredientRepository>();
 			builder.Services.AddScoped<IUserRepository, SQLUserRepository>();
 			builder.Services.AddScoped<ITokenRepository, SQLTokenRepository>();
+			builder.Services.AddScoped<IRecipeRepository, SQLRecipeRepository>();
 
 			// Add AutoMapper to container
 			builder.Services.AddAutoMapper(typeof(AutoMapperProfile));

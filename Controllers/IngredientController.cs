@@ -97,7 +97,7 @@ namespace Pantrify.API.Controllers
 			}
 
 			// Get ingredient
-			Ingredient? ingredient = await this.ingredientRepository.GetbyId(id);
+			Ingredient? ingredient = await this.ingredientRepository.GetById(id);
 
 			// Check for existence
 			if (ingredient == null)
@@ -181,7 +181,7 @@ namespace Pantrify.API.Controllers
 			}
 
 			// Get ingredient
-			Ingredient? ingredient = await this.ingredientRepository.GetbyId(id);
+			Ingredient? ingredient = await this.ingredientRepository.GetById(id);
 
 			// Check for existence
 			if (ingredient == null)

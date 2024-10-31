@@ -6,7 +6,7 @@ namespace Pantrify.API.Repositories
 	{
 		Task<List<Ingredient>> GetByUser(int userId);
 
-		Task<Ingredient?> GetbyId(int id);
+		Task<Ingredient?> GetById(int id);
 
 		Task<Ingredient> Create(Ingredient ingredient);
 
