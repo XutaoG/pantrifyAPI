@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using Pantrify.API.Model;
+using Pantrify.API.Models;
 using Pantrify.API.Repositories;
 
 namespace Pantrify.API.Services
@@ -23,7 +23,7 @@ namespace Pantrify.API.Services
 		public Jwt GenerateJwt(User user)
 		{
 			byte[] secretKey = Encoding.ASCII.GetBytes(this.configuration.GetValue<string>("secret_key") ?? "");
-			DateTime expiryTime = DateTime.UtcNow.AddSeconds(30);
+			DateTime expiryTime = DateTime.UtcNow.AddMinutes(30);
 
 			JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
 
@@ -65,7 +65,6 @@ namespace Pantrify.API.Services
 			return refreshToken;
 		}
 
-		// 
 		public ClaimsPrincipal GetPrincipalFromExpiredToken(string jwt)
 		{
 			byte[] secretKey = Encoding.ASCII.GetBytes(this.configuration.GetValue<string>("secret_key") ?? "");
@@ -85,6 +84,23 @@ namespace Pantrify.API.Services
 			ClaimsPrincipal principal = tokenHandler.ValidateToken(jwt, tokenValidationParameters, out SecurityToken securityToken);
 
 			return principal;
+		}
+
+		public int? GetUserIdFromClaims(List<Claim> claims)
+		{
+			Claim? userIdClaim = claims.FirstOrDefault(c => c.Type == "userId");
+
+			if (userIdClaim == null)
+			{
+				return null;
+			}
+
+			if (int.TryParse(userIdClaim.Value, out int claimUserId))
+			{
+				return claimUserId;
+			}
+
+			return null;
 		}
 	}
 }

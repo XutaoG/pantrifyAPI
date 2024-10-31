@@ -1,4 +1,4 @@
-using Pantrify.API.Model;
+using Pantrify.API.Models;
 
 namespace Pantrify.API.Repositories
 {

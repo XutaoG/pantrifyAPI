@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Identity;
-using Pantrify.API.Model;
+using Pantrify.API.Models;
 
 namespace Pantrify.API.Services
 {

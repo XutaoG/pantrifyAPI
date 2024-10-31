@@ -1,4 +1,4 @@
-namespace Pantrify.API.Model
+namespace Pantrify.API.Models
 {
 	public class Jwt
 	{

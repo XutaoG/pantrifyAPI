@@ -1,27 +1,27 @@
 using Microsoft.EntityFrameworkCore;
 using Pantrify.API.Data;
-using Pantrify.API.Model;
+using Pantrify.API.Models;
 using Pantrify.API.Services;
 
 namespace Pantrify.API.Repositories
 {
 	public class SQLUserRepository : IUserRepository
 	{
-		private readonly AuthDbcontext authDbcontext;
+		private readonly PantrifyDbContext dbContext;
 		private readonly PasswordHashService passwordHashService;
 
 		public SQLUserRepository(
-			AuthDbcontext authDbcontext,
+			PantrifyDbContext dbContext,
 			PasswordHashService passwordHashService
 		)
 		{
-			this.authDbcontext = authDbcontext;
+			this.dbContext = dbContext;
 			this.passwordHashService = passwordHashService;
 		}
 
 		public async Task<User?> Create(User user)
 		{
-			User? foundUser = await this.authDbcontext.Users
+			User? foundUser = await this.dbContext.Users
 				.Where(u => u.Email.ToLower() == user.Email.ToLower())
 				.FirstOrDefaultAsync();
 
@@ -32,17 +32,17 @@ namespace Pantrify.API.Repositories
 			}
 
 			// Add user
-			await this.authDbcontext.Users.AddAsync(user);
+			await this.dbContext.Users.AddAsync(user);
 
 			// Persist changes
-			await this.authDbcontext.SaveChangesAsync();
+			await this.dbContext.SaveChangesAsync();
 
 			return user;
 		}
 
 		public async Task<User?> AuthenticateUser(string email, string password)
 		{
-			User? foundUser = await this.authDbcontext.Users
+			User? foundUser = await this.dbContext.Users
 				.Where(u => u.Email.ToLower() == email.ToLower())
 				.FirstOrDefaultAsync();
 
@@ -63,7 +63,7 @@ namespace Pantrify.API.Repositories
 
 		public async Task<User?> GetById(int id)
 		{
-			return await this.authDbcontext.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
+			return await this.dbContext.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
 		}
 	}
 }

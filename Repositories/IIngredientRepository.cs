@@ -1,4 +1,4 @@
-using Pantrify.API.Model;
+using Pantrify.API.Models;
 
 namespace Pantrify.API.Repositories
 {
@@ -13,5 +13,7 @@ namespace Pantrify.API.Repositories
 		Task<Ingredient?> UpdateById(int id, Ingredient ingredient);
 
 		Task<Ingredient?> DeleteById(int id);
+
+		Task<List<Ingredient>> GetIngredientsByUser(int userId);
 	}
 }

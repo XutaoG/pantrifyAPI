@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Pantrify.API.Data;
-using Pantrify.API.Model;
+using Pantrify.API.Models;
 
 namespace Pantrify.API.Repositories
 {
@@ -79,6 +79,11 @@ namespace Pantrify.API.Repositories
 			await this.pantrifyDbContext.SaveChangesAsync();
 
 			return foundIngredient;
+		}
+
+		public async Task<List<Ingredient>> GetIngredientsByUser(int userId)
+		{
+			return await this.pantrifyDbContext.Ingredients.Where(ing => ing.UserId == userId).ToListAsync();
 		}
 	}
 }

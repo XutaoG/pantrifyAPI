@@ -1,25 +1,25 @@
 using Microsoft.EntityFrameworkCore;
 using Pantrify.API.Data;
-using Pantrify.API.Model;
+using Pantrify.API.Models;
 
 namespace Pantrify.API.Repositories
 {
 	public class SQLTokenRepository : ITokenRepository
 	{
-		private readonly AuthDbcontext authDbcontext;
+		private readonly PantrifyDbContext dbContext;
 
-		public SQLTokenRepository(AuthDbcontext authDbcontext)
+		public SQLTokenRepository(PantrifyDbContext dbContext)
 		{
-			this.authDbcontext = authDbcontext;
+			this.dbContext = dbContext;
 		}
 
 		public async Task<RefreshToken> Create(RefreshToken refreshToken)
 		{
 			// Add token
-			await this.authDbcontext.RefreshTokens.AddAsync(refreshToken);
+			await this.dbContext.RefreshTokens.AddAsync(refreshToken);
 
 			// Persist changes
-			await this.authDbcontext.SaveChangesAsync();
+			await this.dbContext.SaveChangesAsync();
 
 			return refreshToken;
 		}
@@ -27,7 +27,7 @@ namespace Pantrify.API.Repositories
 
 		public async Task<RefreshToken?> GetByToken(string token)
 		{
-			return await this.authDbcontext.RefreshTokens
+			return await this.dbContext.RefreshTokens
 				.Where(t => t.Token == token)
 				.FirstOrDefaultAsync();
 		}
@@ -43,10 +43,10 @@ namespace Pantrify.API.Repositories
 			}
 
 			// Delete ingredient
-			this.authDbcontext.RefreshTokens.Remove(foundRefreshToken);
+			this.dbContext.RefreshTokens.Remove(foundRefreshToken);
 
 			// Persist changes
-			await this.authDbcontext.SaveChangesAsync();
+			await this.dbContext.SaveChangesAsync();
 
 			return foundRefreshToken;
 		}

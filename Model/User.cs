@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Pantrify.API.Model
+namespace Pantrify.API.Models
 {
 	public class User
 	{

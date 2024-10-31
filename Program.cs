@@ -27,10 +27,10 @@ namespace Pantrify
 			{
 				options.UseSqlServer(builder.Configuration.GetConnectionString("PantrifyDbConnectionString"));
 			});
-			builder.Services.AddDbContext<AuthDbcontext>(options =>
-			{
-				options.UseSqlServer(builder.Configuration.GetConnectionString("PantrifyAuthDbConnectionString"));
-			});
+			// builder.Services.AddDbContext<AuthDbcontext>(options =>
+			// {
+			// 	options.UseSqlServer(builder.Configuration.GetConnectionString("PantrifyAuthDbConnectionString"));
+			// });
 
 			// Add repositories to container
 			builder.Services.AddScoped<IIngredientRepository, SQLIngredientRepository>();

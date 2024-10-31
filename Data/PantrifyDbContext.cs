@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Pantrify.API.Model;
+using Pantrify.API.Models;
 
 namespace Pantrify.API.Data
 {
@@ -14,6 +14,11 @@ namespace Pantrify.API.Data
 		public DbSet<RecipeImage> RecipeImages { get; set; }
 
 		public DbSet<Ingredient> Ingredients { get; set; }
+
+		// Auth
+		public DbSet<User> Users { get; set; }
+
+		public DbSet<RefreshToken> RefreshTokens { get; set; }
 
 		public PantrifyDbContext(DbContextOptions<PantrifyDbContext> options) : base(options) { }
 	}

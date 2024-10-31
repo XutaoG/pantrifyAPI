@@ -1,6 +1,6 @@
-namespace Pantrify.API.Response.Dto
+namespace Pantrify.API.Dto.Ingredient
 {
-	public class IngredientResponseDto
+	public class IngredientResponse
 	{
 		public int Id { get; set; }
 

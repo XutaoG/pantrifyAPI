@@ -12,8 +12,8 @@ using Pantrify.API.Data;
 namespace pantrifyAPI.Migrations
 {
     [DbContext(typeof(PantrifyDbContext))]
-    [Migration("20241021195609_UpdateDb")]
-    partial class UpdateDb
+    [Migration("20241031195004_DatabaseRebuild")]
+    partial class DatabaseRebuild
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace pantrifyAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Pantrify.API.Model.Ingredient", b =>
+            modelBuilder.Entity("Pantrify.API.Models.Ingredient", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -58,12 +58,10 @@ namespace pantrifyAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("Ingredient");
                 });
 
-            modelBuilder.Entity("Pantrify.API.Model.Recipe", b =>
+            modelBuilder.Entity("Pantrify.API.Models.Recipe", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -89,12 +87,10 @@ namespace pantrifyAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("Recipe");
                 });
 
-            modelBuilder.Entity("Pantrify.API.Model.RecipeImage", b =>
+            modelBuilder.Entity("Pantrify.API.Models.RecipeImage", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -117,7 +113,7 @@ namespace pantrifyAPI.Migrations
                     b.ToTable("RecipeImage");
                 });
 
-            modelBuilder.Entity("Pantrify.API.Model.RecipeIngredient", b =>
+            modelBuilder.Entity("Pantrify.API.Models.RecipeIngredient", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -149,7 +145,7 @@ namespace pantrifyAPI.Migrations
                     b.ToTable("RecipeIngredient");
                 });
 
-            modelBuilder.Entity("Pantrify.API.Model.RecipeInstruction", b =>
+            modelBuilder.Entity("Pantrify.API.Models.RecipeInstruction", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -174,7 +170,33 @@ namespace pantrifyAPI.Migrations
                     b.ToTable("RecipeInstruction");
                 });
 
-            modelBuilder.Entity("Pantrify.API.Model.User", b =>
+            modelBuilder.Entity("Pantrify.API.Models.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiryTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RefreshTokens");
+                });
+
+            modelBuilder.Entity("Pantrify.API.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -185,6 +207,9 @@ namespace pantrifyAPI.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -200,45 +225,23 @@ namespace pantrifyAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("User");
+                    b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Pantrify.API.Model.Ingredient", b =>
+            modelBuilder.Entity("Pantrify.API.Models.RecipeImage", b =>
                 {
-                    b.HasOne("Pantrify.API.Model.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Pantrify.API.Model.Recipe", b =>
-                {
-                    b.HasOne("Pantrify.API.Model.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Pantrify.API.Model.RecipeImage", b =>
-                {
-                    b.HasOne("Pantrify.API.Model.Recipe", "Recipe")
+                    b.HasOne("Pantrify.API.Models.Recipe", "Recipe")
                         .WithOne("Image")
-                        .HasForeignKey("Pantrify.API.Model.RecipeImage", "RecipeId")
+                        .HasForeignKey("Pantrify.API.Models.RecipeImage", "RecipeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Recipe");
                 });
 
-            modelBuilder.Entity("Pantrify.API.Model.RecipeIngredient", b =>
+            modelBuilder.Entity("Pantrify.API.Models.RecipeIngredient", b =>
                 {
-                    b.HasOne("Pantrify.API.Model.Recipe", "Recipe")
+                    b.HasOne("Pantrify.API.Models.Recipe", "Recipe")
                         .WithMany("Ingredients")
                         .HasForeignKey("RecipeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -247,9 +250,9 @@ namespace pantrifyAPI.Migrations
                     b.Navigation("Recipe");
                 });
 
-            modelBuilder.Entity("Pantrify.API.Model.RecipeInstruction", b =>
+            modelBuilder.Entity("Pantrify.API.Models.RecipeInstruction", b =>
                 {
-                    b.HasOne("Pantrify.API.Model.Recipe", "Recipe")
+                    b.HasOne("Pantrify.API.Models.Recipe", "Recipe")
                         .WithMany("Instructions")
                         .HasForeignKey("RecipeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -258,7 +261,7 @@ namespace pantrifyAPI.Migrations
                     b.Navigation("Recipe");
                 });
 
-            modelBuilder.Entity("Pantrify.API.Model.Recipe", b =>
+            modelBuilder.Entity("Pantrify.API.Models.Recipe", b =>
                 {
                     b.Navigation("Image")
                         .IsRequired();

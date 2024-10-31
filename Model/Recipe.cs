@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace Pantrify.API.Model
+namespace Pantrify.API.Models
 {
 	[Table(nameof(Recipe))]
 	public class Recipe

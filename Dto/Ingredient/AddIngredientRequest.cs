@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Pantrify.API.Add.Dto
+namespace Pantrify.API.Dto.Ingredient
 {
-	public class AddIngredientDto
+	public class AddIngredientRequest
 	{
 		[Required]
 		public string Name { get; set; } = null!;
@@ -15,9 +15,6 @@ namespace Pantrify.API.Add.Dto
 
 		[Required]
 		public bool IsInCart { get; set; }
-
-		[Required]
-		public int UserId { get; set; }
 
 		public DateTime? DateExpired { get; set; }
 	}
