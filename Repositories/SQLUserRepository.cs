@@ -1,19 +1,22 @@
 using Microsoft.EntityFrameworkCore;
 using Pantrify.API.Data;
 using Pantrify.API.Model;
-using Pantrify.API.Utils;
+using Pantrify.API.Services;
 
 namespace Pantrify.API.Repositories
 {
 	public class SQLUserRepository : IUserRepository
 	{
 		private readonly AuthDbcontext authDbcontext;
+		private readonly PasswordHashService passwordHashService;
 
 		public SQLUserRepository(
-			AuthDbcontext authDbcontext // Inject AuthDbContext
+			AuthDbcontext authDbcontext,
+			PasswordHashService passwordHashService
 		)
 		{
 			this.authDbcontext = authDbcontext;
+			this.passwordHashService = passwordHashService;
 		}
 
 		public async Task<User?> Create(User user)
@@ -50,12 +53,17 @@ namespace Pantrify.API.Repositories
 			}
 
 			// Check if password matches
-			if (PasswordHasherService.VerifyPassword(foundUser.PasswordHash, password))
+			if (this.passwordHashService.VerifyPassword(foundUser.PasswordHash, password))
 			{
 				return foundUser;
 			}
 
 			return null;
+		}
+
+		public async Task<User?> GetById(int id)
+		{
+			return await this.authDbcontext.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
 		}
 	}
 }

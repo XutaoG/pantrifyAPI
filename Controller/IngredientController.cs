@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pantrify.API.Add.Dto;
 using Pantrify.API.Model;
@@ -9,6 +10,7 @@ namespace Pantrify.API.Controller
 {
 	[Route("api/ingredient")]
 	[ApiController]
+	[Authorize(AuthenticationSchemes = "Bearer")]
 	public class IngredientController : ControllerBase
 	{
 		private readonly IIngredientRepository ingredientRepository;
