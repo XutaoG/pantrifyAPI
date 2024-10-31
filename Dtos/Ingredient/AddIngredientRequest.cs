@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Pantrify.API.Dto
+namespace Pantrify.API.Dtos
 {
-	public class UpdateIngredientRequest
+	public class AddIngredientRequest
 	{
 		[Required]
 		public string Name { get; set; } = null!;

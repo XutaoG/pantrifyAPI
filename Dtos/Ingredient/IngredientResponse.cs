@@ -1,20 +1,20 @@
-using System.ComponentModel.DataAnnotations;
-
-namespace Pantrify.API.Dto
+namespace Pantrify.API.Dtos
 {
-	public class AddIngredientRequest
+	public class IngredientResponse
 	{
-		[Required]
+		public int Id { get; set; }
+
 		public string Name { get; set; } = null!;
 
-		[Required]
 		public string IngredientType { get; set; } = null!;
 
-		[Required]
 		public bool IsAvailable { get; set; }
 
-		[Required]
 		public bool IsInCart { get; set; }
+
+		public int UserId { get; set; }
+
+		public DateTime DateAdded { get; set; }
 
 		public DateTime? DateExpired { get; set; }
 	}

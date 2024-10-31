@@ -1,5 +1,5 @@
 using AutoMapper;
-using Pantrify.API.Dto;
+using Pantrify.API.Dtos;
 using Pantrify.API.Models;
 
 namespace Pantrify.API.Mapping

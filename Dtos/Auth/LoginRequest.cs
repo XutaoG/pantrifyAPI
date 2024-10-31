@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Pantrify.API.Dto
+namespace Pantrify.API.Dtos
 {
 	public class LoginRequest
 	{

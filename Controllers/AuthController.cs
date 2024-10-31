@@ -1,13 +1,13 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
-using Pantrify.API.Dto;
+using Pantrify.API.Dtos;
 using Pantrify.API.Models;
 using Pantrify.API.Repositories;
 using Pantrify.API.Services;
 
-namespace Pantrify.API.Controller
+namespace Pantrify.API.Controllers
 {
-	[Route("auth")]
+	[Route("api/auth")]
 	[ApiController]
 	public class AuthController : ControllerBase
 	{

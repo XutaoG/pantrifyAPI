@@ -1,4 +1,4 @@
-namespace Pantrify.API.Dto
+namespace Pantrify.API.Dtos
 {
 	public class JwtResponse
 	{
