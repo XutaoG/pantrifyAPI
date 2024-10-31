@@ -1,7 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Pantrify.API.Add.Dto;
 using Pantrify.API.Dto;
 using Pantrify.API.Models;
 using Pantrify.API.Repositories;
@@ -34,16 +33,15 @@ namespace Pantrify.API.Controller
 		{
 			int? userId = this.jwtService.GetUserIdFromClaims(HttpContext.User.Claims.ToList());
 
+			// Check if claim user ID exists
 			if (userId == null)
 			{
-				ModelState.AddModelError("Token", "Invalid token");
-
-				// 400
-				return BadRequest(ModelState);
+				// 401
+				return Unauthorized();
 			}
 
 			// Get all ingredients belonging to user ID
-			List<Ingredient> ingredients = await this.ingredientRepository.GetIngredientsByUser((int)userId);
+			List<Ingredient> ingredients = await this.ingredientRepository.GetByUser((int)userId);
 
 			// Map model to Dto
 			List<IngredientResponse> response = this.mapper.Map<List<IngredientResponse>>(ingredients);
@@ -57,12 +55,11 @@ namespace Pantrify.API.Controller
 		{
 			int? userId = this.jwtService.GetUserIdFromClaims(HttpContext.User.Claims.ToList());
 
+			// Check if claim user ID exists
 			if (userId == null)
 			{
-				ModelState.AddModelError("Token", "Invalid token");
-
-				// 400
-				return BadRequest(ModelState);
+				// 401
+				return Unauthorized();
 			}
 
 			// Validate model
@@ -86,23 +83,19 @@ namespace Pantrify.API.Controller
 			return CreatedAtAction(nameof(GetbyId), new { id = response.Id }, response);
 		}
 
-		// [HttpGet]
-		// public async Task<IActionResult> GetAll()
-		// {
-		// 	// Get all ingredients
-		// 	List<Ingredient> ingredients = await this.ingredientRepository.GetAll();
-
-		// 	// Map model to Dto
-		// 	List<IngredientResponseDto> response = this.mapper.Map<List<IngredientResponseDto>>(ingredients);
-
-		// 	// 200
-		// 	return Ok(response);
-		// }
-
 		[HttpGet]
 		[Route("{id}")]
 		public async Task<IActionResult> GetbyId([FromRoute] int id)
 		{
+			int? userId = this.jwtService.GetUserIdFromClaims(HttpContext.User.Claims.ToList());
+
+			// Check if claim user ID exists
+			if (userId == null)
+			{
+				// 401
+				return Unauthorized();
+			}
+
 			// Get ingredient
 			Ingredient? ingredient = await this.ingredientRepository.GetbyId(id);
 
@@ -111,6 +104,13 @@ namespace Pantrify.API.Controller
 			{
 				// 404
 				return NotFound();
+			}
+
+			// Check if ingredient belongs to the matching user
+			if (ingredient.UserId != userId)
+			{
+				// 401
+				return Unauthorized();
 			}
 
 			// Map model to Dto
@@ -122,8 +122,17 @@ namespace Pantrify.API.Controller
 
 		[HttpPut]
 		[Route("{id}")]
-		public async Task<IActionResult> UpdateById([FromRoute] int id, [FromBody] UpdateIngredientDto updateIngredientDto)
+		public async Task<IActionResult> UpdateById([FromRoute] int id, [FromBody] UpdateIngredientRequest updateIngredientDto)
 		{
+			int? userId = this.jwtService.GetUserIdFromClaims(HttpContext.User.Claims.ToList());
+
+			// Check if claim user ID exists
+			if (userId == null)
+			{
+				// 401
+				return Unauthorized();
+			}
+
 			// Validate model
 			if (!ModelState.IsValid)
 			{
@@ -144,6 +153,13 @@ namespace Pantrify.API.Controller
 				return NotFound();
 			}
 
+			// Check if ingredient belongs to the matching user
+			if (ingredient.UserId != userId)
+			{
+				// 401
+				return Unauthorized();
+			}
+
 			// Map model to response Dto
 			IngredientResponse response = this.mapper.Map<IngredientResponse>(ingredient);
 
@@ -155,7 +171,17 @@ namespace Pantrify.API.Controller
 		[Route("{id}")]
 		public async Task<IActionResult> DeleteById([FromRoute] int id)
 		{
-			Ingredient? ingredient = await this.ingredientRepository.DeleteById(id);
+			int? userId = this.jwtService.GetUserIdFromClaims(HttpContext.User.Claims.ToList());
+
+			// Check if claim user ID exists
+			if (userId == null)
+			{
+				// 401
+				return Unauthorized();
+			}
+
+			// Get ingredient
+			Ingredient? ingredient = await this.ingredientRepository.GetbyId(id);
 
 			// Check for existence
 			if (ingredient == null)
@@ -163,6 +189,15 @@ namespace Pantrify.API.Controller
 				// 404
 				return NotFound();
 			}
+
+			// Check if ingredient belongs to the matching user
+			if (ingredient.UserId != userId)
+			{
+				// 401
+				return Unauthorized();
+			}
+
+			ingredient = await this.ingredientRepository.DeleteById(id);
 
 			// 204
 			return NoContent();

@@ -1,5 +1,4 @@
 using AutoMapper;
-using Pantrify.API.Add.Dto;
 using Pantrify.API.Dto;
 using Pantrify.API.Models;
 
@@ -11,7 +10,7 @@ namespace Pantrify.API.Mapping
 		{
 			// Ingredient
 			CreateMap<AddIngredientRequest, Ingredient>();
-			CreateMap<UpdateIngredientDto, Ingredient>();
+			CreateMap<UpdateIngredientRequest, Ingredient>();
 			CreateMap<Ingredient, IngredientResponse>();
 		}
 	}

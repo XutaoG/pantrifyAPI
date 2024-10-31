@@ -15,9 +15,9 @@ namespace Pantrify.API.Repositories
 			this.pantrifyDbContext = pantrifyDbContext;
 		}
 
-		public async Task<List<Ingredient>> GetAll()
+		public async Task<List<Ingredient>> GetByUser(int userId)
 		{
-			return await this.pantrifyDbContext.Ingredients.ToListAsync();
+			return await this.pantrifyDbContext.Ingredients.Where(ing => ing.UserId == userId).ToListAsync();
 		}
 
 		public async Task<Ingredient?> GetbyId(int id)
@@ -81,9 +81,5 @@ namespace Pantrify.API.Repositories
 			return foundIngredient;
 		}
 
-		public async Task<List<Ingredient>> GetIngredientsByUser(int userId)
-		{
-			return await this.pantrifyDbContext.Ingredients.Where(ing => ing.UserId == userId).ToListAsync();
-		}
 	}
 }

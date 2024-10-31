@@ -4,7 +4,7 @@ namespace Pantrify.API.Repositories
 {
 	public interface IIngredientRepository
 	{
-		Task<List<Ingredient>> GetAll();
+		Task<List<Ingredient>> GetByUser(int userId);
 
 		Task<Ingredient?> GetbyId(int id);
 
@@ -13,7 +13,5 @@ namespace Pantrify.API.Repositories
 		Task<Ingredient?> UpdateById(int id, Ingredient ingredient);
 
 		Task<Ingredient?> DeleteById(int id);
-
-		Task<List<Ingredient>> GetIngredientsByUser(int userId);
 	}
 }
