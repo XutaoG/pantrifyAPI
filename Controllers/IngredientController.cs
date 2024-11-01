@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,7 +37,6 @@ namespace Pantrify.API.Controllers
 			// Check if claim user ID exists
 			if (userId == null)
 			{
-				// 401
 				return Unauthorized();
 			}
 
@@ -46,7 +46,6 @@ namespace Pantrify.API.Controllers
 			// Map model to Dto
 			List<IngredientResponse> response = this.mapper.Map<List<IngredientResponse>>(ingredients);
 
-			// 200
 			return Ok(response);
 		}
 
@@ -58,14 +57,12 @@ namespace Pantrify.API.Controllers
 			// Check if claim user ID exists
 			if (userId == null)
 			{
-				// 401
 				return Unauthorized();
 			}
 
 			// Validate model
 			if (!ModelState.IsValid)
 			{
-				// 400
 				return BadRequest(ModelState);
 			}
 
@@ -79,7 +76,6 @@ namespace Pantrify.API.Controllers
 			// Map model to Dto
 			IngredientResponse response = this.mapper.Map<IngredientResponse>(ingredient);
 
-			// 201
 			return CreatedAtAction(nameof(GetbyId), new { id = response.Id }, response);
 		}
 
@@ -87,36 +83,16 @@ namespace Pantrify.API.Controllers
 		[Route("{id}")]
 		public async Task<IActionResult> GetbyId([FromRoute] int id)
 		{
-			int? userId = this.jwtService.GetUserIdFromClaims(HttpContext.User.Claims.ToList());
+			(IActionResult res, Ingredient? ingredient) = await VerifyOwnershipAndExistence(HttpContext.User.Claims.ToList(), id);
 
-			// Check if claim user ID exists
-			if (userId == null)
-			{
-				// 401
-				return Unauthorized();
-			}
-
-			// Get ingredient
-			Ingredient? ingredient = await this.ingredientRepository.GetById(id);
-
-			// Check for existence
 			if (ingredient == null)
 			{
-				// 404
-				return NotFound();
-			}
-
-			// Check if ingredient belongs to the matching user
-			if (ingredient.UserId != userId)
-			{
-				// 401
-				return Unauthorized();
+				return res;
 			}
 
 			// Map model to Dto
 			IngredientResponse response = this.mapper.Map<IngredientResponse>(ingredient);
 
-			// 200
 			return Ok(response);
 		}
 
@@ -129,14 +105,12 @@ namespace Pantrify.API.Controllers
 			// Check if claim user ID exists
 			if (userId == null)
 			{
-				// 401
 				return Unauthorized();
 			}
 
 			// Validate model
 			if (!ModelState.IsValid)
 			{
-				// 400
 				return BadRequest(ModelState);
 			}
 
@@ -149,21 +123,18 @@ namespace Pantrify.API.Controllers
 			// Check for existence
 			if (ingredient == null)
 			{
-				// 404
 				return NotFound();
 			}
 
 			// Check if ingredient belongs to the matching user
 			if (ingredient.UserId != userId)
 			{
-				// 401
 				return Unauthorized();
 			}
 
 			// Map model to response Dto
 			IngredientResponse response = this.mapper.Map<IngredientResponse>(ingredient);
 
-			// 200
 			return Ok(response);
 		}
 
@@ -171,13 +142,68 @@ namespace Pantrify.API.Controllers
 		[Route("{id}")]
 		public async Task<IActionResult> DeleteById([FromRoute] int id)
 		{
-			int? userId = this.jwtService.GetUserIdFromClaims(HttpContext.User.Claims.ToList());
+			(IActionResult res, Ingredient? ingredient) = await VerifyOwnershipAndExistence(HttpContext.User.Claims.ToList(), id);
+
+			if (ingredient == null)
+			{
+				return res;
+			}
+
+			ingredient = await this.ingredientRepository.DeleteById(id);
+
+			return NoContent();
+		}
+
+		[HttpPost]
+		[Route("move-to-cart/{id}")]
+		public async Task<IActionResult> MoveToCart([FromRoute] int id)
+		{
+			(IActionResult res, Ingredient? ingredient) = await VerifyOwnershipAndExistence(HttpContext.User.Claims.ToList(), id);
+
+			if (ingredient == null)
+			{
+				return res;
+			}
+
+			// Update availability
+			ingredient.IsAvailable = false;
+			ingredient.IsInCart = true;
+
+			// Update model
+			ingredient = await this.ingredientRepository.UpdateById(id, ingredient);
+
+			return Ok(ingredient);
+		}
+
+		[HttpPost]
+		[Route("move-to-inventory/{id}")]
+		public async Task<IActionResult> MoveToInventory([FromRoute] int id)
+		{
+			(IActionResult res, Ingredient? ingredient) = await VerifyOwnershipAndExistence(HttpContext.User.Claims.ToList(), id);
+
+			if (ingredient == null)
+			{
+				return res;
+			}
+
+			// Update availability
+			ingredient.IsAvailable = true;
+			ingredient.IsInCart = false;
+
+			// Update model
+			ingredient = await this.ingredientRepository.UpdateById(id, ingredient);
+
+			return Ok(ingredient);
+		}
+
+		private async Task<(IActionResult, Ingredient?)> VerifyOwnershipAndExistence(List<Claim> claims, int id)
+		{
+			int? userId = this.jwtService.GetUserIdFromClaims(claims);
 
 			// Check if claim user ID exists
 			if (userId == null)
 			{
-				// 401
-				return Unauthorized();
+				return (Unauthorized(), null);
 			}
 
 			// Get ingredient
@@ -186,21 +212,16 @@ namespace Pantrify.API.Controllers
 			// Check for existence
 			if (ingredient == null)
 			{
-				// 404
-				return NotFound();
+				return (NotFound(), null);
 			}
 
 			// Check if ingredient belongs to the matching user
 			if (ingredient.UserId != userId)
 			{
-				// 401
-				return Unauthorized();
+				return (Unauthorized(), null);
 			}
 
-			ingredient = await this.ingredientRepository.DeleteById(id);
-
-			// 204
-			return NoContent();
+			return (Ok(), ingredient);
 		}
 	}
 }
