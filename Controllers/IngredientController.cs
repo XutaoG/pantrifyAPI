@@ -196,6 +196,84 @@ namespace Pantrify.API.Controllers
 			return Ok(ingredient);
 		}
 
+		[HttpPost]
+		[Route("add-recipe-ingredient-to-cart")]
+		public async Task<IActionResult> AddRecipeIngredientToCart([FromBody] AddRecipeIngredientRequest addRecipeIngredientRequest)
+		{
+			int? userId = this.jwtService.GetUserIdFromClaims(HttpContext.User.Claims.ToList());
+
+			// Check if claim user ID exists
+			if (userId == null)
+			{
+				return Unauthorized();
+			}
+
+			// Validate model
+			if (!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+			}
+
+			// Check if recipe ingredient exists
+			Ingredient? ingredient = await this.ingredientRepository.GetByName(addRecipeIngredientRequest.Name);
+			if (ingredient != null)
+			{
+				return await this.MoveToCart(ingredient.Id);
+			}
+
+			// Map Dto to model
+			RecipeIngredient recipeIngredient = this.mapper.Map<RecipeIngredient>(addRecipeIngredientRequest);
+
+			// Map recipe ingredient to ingredient
+			ingredient = this.mapper.Map<Ingredient>(recipeIngredient);
+			ingredient.IsAvailable = false;
+			ingredient.IsInCart = true;
+			ingredient.UserId = (int)userId;
+
+			ingredient = await this.ingredientRepository.Create(ingredient);
+
+			return Ok(ingredient);
+		}
+
+		[HttpPost]
+		[Route("add-recipe-ingredient-to-inventory")]
+		public async Task<IActionResult> AddRecipeIngredientToInventory([FromBody] AddRecipeIngredientRequest addRecipeIngredientRequest)
+		{
+			int? userId = this.jwtService.GetUserIdFromClaims(HttpContext.User.Claims.ToList());
+
+			// Check if claim user ID exists
+			if (userId == null)
+			{
+				return Unauthorized();
+			}
+
+			// Validate model
+			if (!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+			}
+
+			// Check if recipe ingredient exists
+			Ingredient? ingredient = await this.ingredientRepository.GetByName(addRecipeIngredientRequest.Name);
+			if (ingredient != null)
+			{
+				return await this.MoveToInventory(ingredient.Id);
+			}
+
+			// Map Dto to model
+			RecipeIngredient recipeIngredient = this.mapper.Map<RecipeIngredient>(addRecipeIngredientRequest);
+
+			// Map recipe ingredient to ingredient
+			ingredient = this.mapper.Map<Ingredient>(recipeIngredient);
+			ingredient.IsAvailable = true;
+			ingredient.IsInCart = false;
+			ingredient.UserId = (int)userId;
+
+			ingredient = await this.ingredientRepository.Create(ingredient);
+
+			return Ok(ingredient);
+		}
+
 		private async Task<(IActionResult, Ingredient?)> VerifyOwnershipAndExistence(List<Claim> claims, int id)
 		{
 			int? userId = this.jwtService.GetUserIdFromClaims(claims);
