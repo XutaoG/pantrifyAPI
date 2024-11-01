@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,16 +15,19 @@ namespace Pantrify.API.Controllers
 	public class RecipeController : ControllerBase
 	{
 		private readonly IRecipeRepository recipeRepository;
+		private readonly IIngredientRepository ingredientRepository;
 		private readonly JwtService jwtService;
 		private readonly IMapper mapper;
 
 		public RecipeController(
 			IRecipeRepository recipeRepository,
+			IIngredientRepository ingredientRepository,
 			JwtService jwtService,
 			IMapper mapper
 		)
 		{
 			this.recipeRepository = recipeRepository;
+			this.ingredientRepository = ingredientRepository;
 			this.jwtService = jwtService;
 			this.mapper = mapper;
 		}
@@ -36,7 +40,6 @@ namespace Pantrify.API.Controllers
 			// Check if claim user ID exists
 			if (userId == null)
 			{
-				// 401
 				return Unauthorized();
 			}
 
@@ -46,7 +49,6 @@ namespace Pantrify.API.Controllers
 			// Map model to Dto
 			List<RecipeResponse> response = this.mapper.Map<List<RecipeResponse>>(recipes);
 
-			// 200
 			return Ok(response);
 		}
 
@@ -58,14 +60,12 @@ namespace Pantrify.API.Controllers
 			// Check if claim user ID exists
 			if (userId == null)
 			{
-				// 401
 				return Unauthorized();
 			}
 
 			// Validate model
 			if (!ModelState.IsValid)
 			{
-				// 400
 				return BadRequest(ModelState);
 			}
 
@@ -80,7 +80,6 @@ namespace Pantrify.API.Controllers
 			// Map model to Dto
 			RecipeResponse response = this.mapper.Map<RecipeResponse>(recipe);
 
-			// 201
 			return CreatedAtAction(nameof(GetbyId), new { id = response.Id }, response);
 		}
 
@@ -88,36 +87,16 @@ namespace Pantrify.API.Controllers
 		[Route("{id}")]
 		public async Task<IActionResult> GetbyId([FromRoute] int id)
 		{
-			int? userId = this.jwtService.GetUserIdFromClaims(HttpContext.User.Claims.ToList());
+			(IActionResult res, Recipe? recipe) = await VerifyOwnershipAndExistence(HttpContext.User.Claims.ToList(), id);
 
-			// Check if claim user ID exists
-			if (userId == null)
-			{
-				// 401
-				return Unauthorized();
-			}
-
-			// Get recipe
-			Recipe? recipe = await this.recipeRepository.GetById(id);
-
-			// Check for existence
 			if (recipe == null)
 			{
-				// 404
-				return NotFound();
-			}
-
-			// Check if recipe belongs to the matching user
-			if (recipe.UserId != userId)
-			{
-				// 401
-				return Unauthorized();
+				return res;
 			}
 
 			// Map model to Dto
 			RecipeResponse response = this.mapper.Map<RecipeResponse>(recipe);
 
-			// 200
 			return Ok(response);
 		}
 
@@ -130,14 +109,12 @@ namespace Pantrify.API.Controllers
 			// Check if claim user ID exists
 			if (userId == null)
 			{
-				// 401
 				return Unauthorized();
 			}
 
 			// Validate model
 			if (!ModelState.IsValid)
 			{
-				// 400
 				return BadRequest(ModelState);
 			}
 
@@ -150,21 +127,18 @@ namespace Pantrify.API.Controllers
 			// Check for existence
 			if (recipe == null)
 			{
-				// 404
 				return NotFound();
 			}
 
 			// Check if recipe belongs to the matching user
 			if (recipe.UserId != userId)
 			{
-				// 401
 				return Unauthorized();
 			}
 
 			// Map model to response Dto
 			RecipeResponse response = this.mapper.Map<RecipeResponse>(recipe);
 
-			// 200
 			return Ok(response);
 		}
 
@@ -172,36 +146,85 @@ namespace Pantrify.API.Controllers
 		[Route("{id}")]
 		public async Task<IActionResult> DeleteById([FromRoute] int id)
 		{
-			int? userId = this.jwtService.GetUserIdFromClaims(HttpContext.User.Claims.ToList());
+			(IActionResult res, Recipe? recipe) = await VerifyOwnershipAndExistence(HttpContext.User.Claims.ToList(), id);
+
+			if (recipe == null)
+			{
+				return res;
+			}
+
+			recipe = await this.recipeRepository.DeleteById(id);
+
+			return NoContent();
+		}
+
+		[HttpGet]
+		[Route("get-ingredients-availability/{id}")]
+		public async Task<IActionResult> GetRecipeIngredientsAvailability([FromRoute] int id)
+		{
+			(IActionResult res, Recipe? recipe) = await VerifyOwnershipAndExistence(HttpContext.User.Claims.ToList(), id);
+
+			if (recipe == null)
+			{
+				return res;
+			}
+
+			// Initialize response
+			RecipeAvailbilityResponse response = new RecipeAvailbilityResponse();
+			response.IngredientAvailabilities = [];
+
+			// Check availability of each ingredients
+			for (int i = 0; i < recipe.Ingredients.Count; i++)
+			{
+				Ingredient? ingredient = await this.ingredientRepository.GetByName(recipe.Ingredients[i].Name);
+
+				if (ingredient == null || ingredient.IsAvailable == false)
+				{
+					response.IngredientAvailabilities.Add(new IngredientAvailabilityResponse()
+					{
+						Name = recipe.Ingredients[i].Name,
+						Availability = false,
+					});
+				}
+				else
+				{
+					response.IngredientAvailabilities.Add(new IngredientAvailabilityResponse()
+					{
+						Name = recipe.Ingredients[i].Name,
+						Availability = true,
+					});
+				}
+			}
+
+			return Ok(response);
+		}
+
+		private async Task<(IActionResult, Recipe?)> VerifyOwnershipAndExistence(List<Claim> claims, int id)
+		{
+			int? userId = this.jwtService.GetUserIdFromClaims(claims);
 
 			// Check if claim user ID exists
 			if (userId == null)
 			{
-				// 401
-				return Unauthorized();
+				return (Unauthorized(), null);
 			}
 
-			// Get recipe
+			// Get ingredient
 			Recipe? recipe = await this.recipeRepository.GetById(id);
 
 			// Check for existence
 			if (recipe == null)
 			{
-				// 404
-				return NotFound();
+				return (NotFound(), null);
 			}
 
-			// Check if recipe belongs to the matching user
+			// Check if ingredient belongs to the matching user
 			if (recipe.UserId != userId)
 			{
-				// 401
-				return Unauthorized();
+				return (Unauthorized(), null);
 			}
 
-			recipe = await this.recipeRepository.DeleteById(id);
-
-			// 204
-			return NoContent();
+			return (Ok(), recipe);
 		}
 	}
 }

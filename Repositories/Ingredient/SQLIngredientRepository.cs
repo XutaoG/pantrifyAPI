@@ -81,5 +81,11 @@ namespace Pantrify.API.Repositories
 			return foundIngredient;
 		}
 
+		public async Task<Ingredient?> GetByName(string name)
+		{
+			return await this.pantrifyDbContext.Ingredients
+				.Where(ing => ing.Name.ToLower() == name.ToLower())
+				.FirstOrDefaultAsync();
+		}
 	}
 }

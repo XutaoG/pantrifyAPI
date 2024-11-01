@@ -13,5 +13,7 @@ namespace Pantrify.API.Repositories
 		Task<Ingredient?> UpdateById(int id, Ingredient ingredient);
 
 		Task<Ingredient?> DeleteById(int id);
+
+		Task<Ingredient?> GetByName(string name);
 	}
 }
