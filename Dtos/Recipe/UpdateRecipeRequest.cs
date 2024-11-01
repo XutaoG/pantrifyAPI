@@ -2,8 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Pantrify.API.Dtos
 {
-	public class AddRecipeRequest
-
+	public class UpdateRecipeRequest
 	{
 		[Required]
 		public string Name { get; set; } = null!;
@@ -18,13 +17,13 @@ namespace Pantrify.API.Dtos
 		public int NumServings { get; set; }
 
 		[Required]
-		public List<AddRecipeIngredientRequest> Ingredients { get; set; } = null!;
+		public List<UpdateRecipeIngredientRequest> Ingredients { get; set; } = null!;
 
 		[Required]
 		public List<string> Instructions { get; set; } = null!;
 	}
 
-	public class AddRecipeIngredientRequest
+	public class UpdateRecipeIngredientRequest
 	{
 		[Required]
 		public string Name { get; set; } = null!;

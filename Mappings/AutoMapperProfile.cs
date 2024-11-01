@@ -15,16 +15,26 @@ namespace Pantrify.API.Mapping
 
 			// Recipe Ingredient
 			CreateMap<AddRecipeIngredientRequest, RecipeIngredient>();
+			CreateMap<UpdateRecipeIngredientRequest, RecipeIngredient>();
 			CreateMap<RecipeIngredient, RecipeIngredientResponse>();
 
 			// Recipe Instruction
-			CreateMap<AddRecipeInstructionRequest, RecipeInstruction>();
 			CreateMap<RecipeInstruction, RecipeInstructionResponse>();
 
 			// Recipe
-			CreateMap<AddRecipeRequest, Recipe>();
+			CreateMap<AddRecipeRequest, Recipe>().ForMember(dest => dest.Instructions,
+				opt => opt.MapFrom(src => src.Instructions.Select((ins, i) => new RecipeInstruction()
+				{
+					Step = i + 1,
+					Instruction = ins,
+				})));
+			CreateMap<UpdateRecipeRequest, Recipe>().ForMember(dest => dest.Instructions,
+				opt => opt.MapFrom(src => src.Instructions.Select((ins, i) => new RecipeInstruction()
+				{
+					Step = i + 1,
+					Instruction = ins
+				})));
 			CreateMap<Recipe, RecipeResponse>();
 		}
 	}
-
 }

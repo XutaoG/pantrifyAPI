@@ -15,7 +15,10 @@ namespace Pantrify.API.Repositories
 
 		public async Task<List<Recipe>> GetByUser(int userId)
 		{
-			return await this.dbContext.Recipes.Where(recipe => recipe.UserId == userId).ToListAsync();
+			return await this.dbContext.Recipes.Where(recipe => recipe.UserId == userId)
+				.Include("Instructions")
+				.Include("Ingredients")
+				.ToListAsync();
 		}
 
 		public async Task<Recipe?> GetById(int id)
@@ -63,7 +66,6 @@ namespace Pantrify.API.Repositories
 
 		public async Task<Recipe?> DeleteById(int id)
 		{
-			// Check if ID exists
 			// Check if ID exists
 			Recipe? foundRecipe = await GetById(id);
 

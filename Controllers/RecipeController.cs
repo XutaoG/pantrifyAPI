@@ -72,12 +72,6 @@ namespace Pantrify.API.Controllers
 			// Map Dto to model
 			Recipe recipe = this.mapper.Map<Recipe>(addRecipeRequest);
 
-			// Set recipe instructions steps
-			for (int i = 0; i < recipe.Instructions.Count; i++)
-			{
-				recipe.Instructions[i].Step = i + 1;
-			}
-
 			recipe.UserId = (int)userId;
 
 			// Create recipe
@@ -125,6 +119,89 @@ namespace Pantrify.API.Controllers
 
 			// 200
 			return Ok(response);
+		}
+
+		[HttpPut]
+		[Route("{id}")]
+		public async Task<IActionResult> UpdateById([FromRoute] int id, [FromBody] UpdateRecipeRequest updateRecipeRequest)
+		{
+			int? userId = this.jwtService.GetUserIdFromClaims(HttpContext.User.Claims.ToList());
+
+			// Check if claim user ID exists
+			if (userId == null)
+			{
+				// 401
+				return Unauthorized();
+			}
+
+			// Validate model
+			if (!ModelState.IsValid)
+			{
+				// 400
+				return BadRequest(ModelState);
+			}
+
+			// Map Dto to model
+			Recipe? recipe = this.mapper.Map<Recipe>(updateRecipeRequest);
+
+			// Update model
+			recipe = await this.recipeRepository.UpdateById(id, recipe);
+
+			// Check for existence
+			if (recipe == null)
+			{
+				// 404
+				return NotFound();
+			}
+
+			// Check if recipe belongs to the matching user
+			if (recipe.UserId != userId)
+			{
+				// 401
+				return Unauthorized();
+			}
+
+			// Map model to response Dto
+			RecipeResponse response = this.mapper.Map<RecipeResponse>(recipe);
+
+			// 200
+			return Ok(response);
+		}
+
+		[HttpDelete]
+		[Route("{id}")]
+		public async Task<IActionResult> DeleteById([FromRoute] int id)
+		{
+			int? userId = this.jwtService.GetUserIdFromClaims(HttpContext.User.Claims.ToList());
+
+			// Check if claim user ID exists
+			if (userId == null)
+			{
+				// 401
+				return Unauthorized();
+			}
+
+			// Get recipe
+			Recipe? recipe = await this.recipeRepository.GetById(id);
+
+			// Check for existence
+			if (recipe == null)
+			{
+				// 404
+				return NotFound();
+			}
+
+			// Check if recipe belongs to the matching user
+			if (recipe.UserId != userId)
+			{
+				// 401
+				return Unauthorized();
+			}
+
+			recipe = await this.recipeRepository.DeleteById(id);
+
+			// 204
+			return NoContent();
 		}
 	}
 }
