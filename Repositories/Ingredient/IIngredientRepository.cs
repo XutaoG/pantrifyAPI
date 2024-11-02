@@ -11,9 +11,7 @@ namespace Pantrify.API.Repositories
 			bool? isAvailable,
 			bool? isInCart,
 			string? sortBy,
-			bool? isAscending,
-			int? pageNumber,
-			int? pageSize
+			bool? isAscending
 			);
 
 		Task<Ingredient?> GetById(int id);

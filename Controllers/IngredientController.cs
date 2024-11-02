@@ -57,13 +57,25 @@ namespace Pantrify.API.Controllers
 				isAvailable,
 				isInCart,
 				sortBy,
-				isAscending,
-				pageNumber,
-				pageSize
+				isAscending
 			);
 
+			int totalCount = ingredients.Count;
+
+			// Pagination
+			int skipResult = ((pageNumber ?? 1) - 1) * (pageSize ?? 12);
+			ingredients = ingredients.AsQueryable().Skip(skipResult).Take(pageSize ?? 12).ToList();
+
 			// Map model to Dto
-			List<IngredientResponse> response = this.mapper.Map<List<IngredientResponse>>(ingredients);
+			List<IngredientResponse> ingredientResponse = this.mapper.Map<List<IngredientResponse>>(ingredients);
+
+			IngredientListResponse response = new IngredientListResponse()
+			{
+				Ingredients = ingredientResponse,
+				TotalCount = totalCount,
+				PageNumber = pageNumber ?? 1,
+				PageSize = pageSize ?? 12
+			};
 
 			return Ok(response);
 		}

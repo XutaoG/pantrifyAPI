@@ -22,9 +22,7 @@ namespace Pantrify.API.Repositories
 			bool? isAvailable,
 			bool? isInCart,
 			string? sortBy,
-			bool? isAscending,
-			int? pageNumber,
-			int? pageSize
+			bool? isAscending
 			)
 		{
 			IQueryable<Ingredient> ingredients = this.pantrifyDbContext.Ingredients.Where(
@@ -74,10 +72,6 @@ namespace Pantrify.API.Repositories
 						ingredients.OrderByDescending(ing => ing.DateExpired);
 				}
 			}
-
-			// Pagination
-			int skipResult = ((pageNumber ?? 1) - 1) * (pageSize ?? 12);
-			ingredients = ingredients.Skip(skipResult).Take(pageSize ?? 12);
 
 			return await ingredients.ToListAsync();
 		}
