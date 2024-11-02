@@ -11,9 +11,7 @@ namespace Pantrify.API.Repositories
 			int? minDuration,
 			int? maxDuration,
 			string? sortBy,
-			bool? isAscending,
-			int? pageNumber,
-			int? pageSize
+			bool? isAscending
 			);
 
 		Task<Recipe?> GetById(int id);

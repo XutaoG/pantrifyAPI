@@ -60,12 +60,25 @@ namespace Pantrify.API.Controllers
 				minDuration,
 				maxDuration,
 				sortBy,
-				isAscending,
-				pageNumber,
-				pageSize);
+				isAscending
+			);
+
+			int totalCount = recipes.Count;
+
+			// Pagination
+			int skipResult = ((pageNumber ?? 1) - 1) * (pageSize ?? 12);
+			recipes = recipes.AsQueryable().Skip(skipResult).Take(pageSize ?? 12).ToList();
 
 			// Map model to Dto
-			List<RecipeResponse> response = this.mapper.Map<List<RecipeResponse>>(recipes);
+			List<RecipeResponse> recipeResponses = this.mapper.Map<List<RecipeResponse>>(recipes);
+
+			RecipeListResponse response = new RecipeListResponse()
+			{
+				Recipes = recipeResponses,
+				TotalCount = totalCount,
+				PageNumber = pageNumber ?? 1,
+				PageSize = pageSize ?? 12
+			};
 
 			return Ok(response);
 		}

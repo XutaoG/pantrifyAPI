@@ -20,9 +20,7 @@ namespace Pantrify.API.Repositories
 			int? minDuration,
 			int? maxDuration,
 			string? sortBy,
-			bool? isAscending,
-			int? pageNumber,
-			int? pageSize
+			bool? isAscending
 			)
 		{
 			IQueryable<Recipe> recipes = this.dbContext.Recipes.Where(
@@ -73,10 +71,6 @@ namespace Pantrify.API.Repositories
 						recipes.OrderByDescending(recipe => recipe.Duration);
 				}
 			}
-
-			// Pagination
-			int skipResult = ((pageNumber ?? 1) - 1) * (pageSize ?? 12);
-			recipes = recipes.Skip(skipResult).Take(pageSize ?? 12);
 
 			return await recipes.ToListAsync();
 		}
