@@ -188,8 +188,7 @@ namespace Pantrify.API.Controllers
 			}
 
 			// Initialize response
-			RecipeAvailbilityResponse response = new RecipeAvailbilityResponse();
-			response.IngredientAvailabilities = [];
+			List<IngredientAvailabilityResponse> response = [];
 
 			// Check availability of each ingredients
 			for (int i = 0; i < recipe.Ingredients.Count; i++)
@@ -198,7 +197,7 @@ namespace Pantrify.API.Controllers
 
 				if (ingredient == null || ingredient.IsAvailable == false)
 				{
-					response.IngredientAvailabilities.Add(new IngredientAvailabilityResponse()
+					response.Add(new IngredientAvailabilityResponse()
 					{
 						Name = recipe.Ingredients[i].Name,
 						Availability = false,
@@ -206,7 +205,7 @@ namespace Pantrify.API.Controllers
 				}
 				else
 				{
-					response.IngredientAvailabilities.Add(new IngredientAvailabilityResponse()
+					response.Add(new IngredientAvailabilityResponse()
 					{
 						Name = recipe.Ingredients[i].Name,
 						Availability = true,
