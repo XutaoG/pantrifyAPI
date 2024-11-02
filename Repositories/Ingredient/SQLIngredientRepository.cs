@@ -15,9 +15,71 @@ namespace Pantrify.API.Repositories
 			this.pantrifyDbContext = pantrifyDbContext;
 		}
 
-		public async Task<List<Ingredient>> GetByUser(int userId)
+		public async Task<List<Ingredient>> GetByUser(
+			int userId,
+			string? name,
+			string? ingredientType,
+			bool? isAvailable,
+			bool? isInCart,
+			string? sortBy,
+			bool? isAscending,
+			int? pageNumber,
+			int? pageSize
+			)
 		{
-			return await this.pantrifyDbContext.Ingredients.Where(ing => ing.UserId == userId).ToListAsync();
+			IQueryable<Ingredient> ingredients = this.pantrifyDbContext.Ingredients.Where(
+				ing => ing.UserId == userId &&
+				ing.Name.ToLower().Contains(name == null ? "" : name.ToLower())
+				).AsQueryable();
+
+			// Filter ingredient type
+			if (!string.IsNullOrWhiteSpace(ingredientType))
+			{
+				ingredients = ingredients.Where(ing => ing.IngredientType == ingredientType);
+			}
+
+			// Filter by inventory availability
+			if (isAvailable != null)
+			{
+				ingredients = ingredients.Where(ing => ing.IsAvailable == isAvailable);
+			}
+
+			// Filter by cart availability
+			if (isInCart != null)
+			{
+				ingredients = ingredients.Where(ing => ing.IsInCart == isInCart);
+			}
+
+			if (sortBy != null)
+			{
+				// Sort by name
+				if (sortBy.Equals("name", StringComparison.OrdinalIgnoreCase))
+				{
+					ingredients = isAscending ?? true ?
+						ingredients.OrderBy(ing => ing.Name) :
+						ingredients.OrderByDescending(ing => ing.Name);
+				}
+				// Sort by date added
+				else if (sortBy.Equals("dateAdded", StringComparison.OrdinalIgnoreCase))
+				{
+					ingredients = isAscending ?? true ?
+						ingredients.OrderBy(ing => ing.DateAdded) :
+						ingredients.OrderByDescending(ing => ing.DateAdded);
+				}
+				// Sort by date expired
+				else if (sortBy.Equals("dateExpired", StringComparison.OrdinalIgnoreCase))
+				{
+					ingredients = isAscending ?? true ?
+						ingredients.OrderBy(ing => ing.DateExpired) :
+						ingredients.OrderByDescending(ing => ing.DateExpired);
+				}
+			}
+
+			// Pagination
+			int skipResult = ((pageNumber ?? 1) - 1) * pageSize ?? 12;
+			ingredients = ingredients.Skip(skipResult).Take(pageSize ?? 12);
+
+			return await ingredients.ToListAsync();
 		}
 
 		public async Task<Ingredient?> GetById(int id)

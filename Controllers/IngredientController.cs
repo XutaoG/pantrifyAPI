@@ -30,7 +30,16 @@ namespace Pantrify.API.Controllers
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> GetAllByUserId()
+		public async Task<IActionResult> GetAllByUserId(
+			[FromQuery] string? name,
+			[FromQuery] string? ingredientType,
+			[FromQuery] bool? isAvailable,
+			[FromQuery] bool? isInCart,
+			[FromQuery] string? sortBy,
+			[FromQuery] bool? isAscending,
+			[FromQuery] int? pageNumber,
+			[FromQuery] int? pageSize
+			)
 		{
 			int? userId = this.jwtService.GetUserIdFromClaims(HttpContext.User.Claims.ToList());
 
@@ -41,7 +50,17 @@ namespace Pantrify.API.Controllers
 			}
 
 			// Get all ingredients belonging to user ID
-			List<Ingredient> ingredients = await this.ingredientRepository.GetByUser((int)userId);
+			List<Ingredient> ingredients = await this.ingredientRepository.GetByUser(
+				(int)userId,
+				name,
+				ingredientType,
+				isAvailable,
+				isInCart,
+				sortBy,
+				isAscending,
+				pageNumber,
+				pageSize
+			);
 
 			// Map model to Dto
 			List<IngredientResponse> response = this.mapper.Map<List<IngredientResponse>>(ingredients);
