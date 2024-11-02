@@ -87,38 +87,6 @@ namespace Pantrify.API.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Create([FromBody] AddRecipeRequest addRecipeRequest)
-		{
-			int? userId = this.jwtService.GetUserIdFromClaims(HttpContext.User.Claims.ToList());
-
-			// Check if claim user ID exists
-			if (userId == null)
-			{
-				return Unauthorized();
-			}
-
-			// Validate model
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
-
-			// Map Dto to model
-			Recipe recipe = this.mapper.Map<Recipe>(addRecipeRequest);
-
-			recipe.UserId = (int)userId;
-
-			// Create recipe
-			recipe = await this.recipeRepository.Create(recipe);
-
-			// Map model to Dto
-			RecipeResponse response = this.mapper.Map<RecipeResponse>(recipe);
-
-			return CreatedAtAction(nameof(GetbyId), new { id = response.Id }, response);
-		}
-
-		[HttpPost]
-		[Route("test")]
 		public async Task<IActionResult> Test(
 			[FromForm] AddRecipeRequest addRecipeRequest
 			)
