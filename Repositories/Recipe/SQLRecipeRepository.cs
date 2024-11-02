@@ -13,12 +13,72 @@ namespace Pantrify.API.Repositories
 			this.dbContext = dbContext;
 		}
 
-		public async Task<List<Recipe>> GetByUser(int userId)
+		public async Task<List<Recipe>> GetByUser(
+			int userId,
+			string? name,
+			int? difficulty,
+			int? minDuration,
+			int? maxDuration,
+			string? sortBy,
+			bool? isAscending,
+			int? pageNumber,
+			int? pageSize
+			)
 		{
-			return await this.dbContext.Recipes.Where(recipe => recipe.UserId == userId)
+			IQueryable<Recipe> recipes = this.dbContext.Recipes.Where(
+				recipe => recipe.UserId == userId &&
+				recipe.Name.ToLower().Contains(name == null ? "" : name.ToLower()))
 				.Include("Instructions")
 				.Include("Ingredients")
-				.ToListAsync();
+				.AsQueryable();
+
+			// Filter difficulty
+			if (difficulty != null)
+			{
+				recipes = recipes.Where(recipe => recipe.Difficulty == difficulty);
+			}
+
+			// Filter by duration
+			if (minDuration != null)
+			{
+				recipes = recipes.Where(recipes => recipes.Duration >= minDuration);
+			}
+
+			if (maxDuration != null)
+			{
+				recipes = recipes.Where(recipe => recipe.Duration <= maxDuration);
+			}
+
+			if (sortBy != null)
+			{
+				// Sort by name
+				if (sortBy.Equals("name", StringComparison.OrdinalIgnoreCase))
+				{
+					recipes = isAscending ?? true ?
+						recipes.OrderBy(recipe => recipe.Name) :
+						recipes.OrderByDescending(recipe => recipe.Name);
+				}
+				// Sort by difficulty
+				if (sortBy.Equals("difficulty", StringComparison.OrdinalIgnoreCase))
+				{
+					recipes = isAscending ?? true ?
+						recipes.OrderBy(recipe => recipe.Difficulty) :
+						recipes.OrderByDescending(recipe => recipe.Difficulty);
+				}
+				// Sort by duration
+				if (sortBy.Equals("duration", StringComparison.OrdinalIgnoreCase))
+				{
+					recipes = isAscending ?? true ?
+						recipes.OrderBy(recipe => recipe.Duration) :
+						recipes.OrderByDescending(recipe => recipe.Duration);
+				}
+			}
+
+			// Pagination
+			int skipResult = ((pageNumber ?? 1) - 1) * pageSize ?? 12;
+			recipes = recipes.Skip(skipResult).Take(pageSize ?? 12);
+
+			return await recipes.ToListAsync();
 		}
 
 		public async Task<Recipe?> GetById(int id)

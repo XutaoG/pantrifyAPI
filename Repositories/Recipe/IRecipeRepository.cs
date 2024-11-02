@@ -4,7 +4,17 @@ namespace Pantrify.API.Repositories
 {
 	public interface IRecipeRepository
 	{
-		Task<List<Recipe>> GetByUser(int userId);
+		Task<List<Recipe>> GetByUser(
+			int userId,
+			string? name,
+			int? difficulty,
+			int? minDuration,
+			int? maxDuration,
+			string? sortBy,
+			bool? isAscending,
+			int? pageNumber,
+			int? pageSize
+			);
 
 		Task<Recipe?> GetById(int id);
 
