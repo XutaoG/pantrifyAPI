@@ -75,7 +75,7 @@ namespace Pantrify.API.Repositories
 			}
 
 			// Pagination
-			int skipResult = ((pageNumber ?? 1) - 1) * pageSize ?? 12;
+			int skipResult = ((pageNumber ?? 1) - 1) * (pageSize ?? 12);
 			recipes = recipes.Skip(skipResult).Take(pageSize ?? 12);
 
 			return await recipes.ToListAsync();
@@ -117,6 +117,7 @@ namespace Pantrify.API.Repositories
 			foundRecipe.NumServings = recipe.NumServings;
 			foundRecipe.Ingredients = recipe.Ingredients;
 			foundRecipe.Instructions = recipe.Instructions;
+			foundRecipe.DateModified = DateTime.UtcNow;
 
 			// Persist changes
 			await this.dbContext.SaveChangesAsync();

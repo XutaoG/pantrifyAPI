@@ -76,7 +76,7 @@ namespace Pantrify.API.Repositories
 			}
 
 			// Pagination
-			int skipResult = ((pageNumber ?? 1) - 1) * pageSize ?? 12;
+			int skipResult = ((pageNumber ?? 1) - 1) * (pageSize ?? 12);
 			ingredients = ingredients.Skip(skipResult).Take(pageSize ?? 12);
 
 			return await ingredients.ToListAsync();

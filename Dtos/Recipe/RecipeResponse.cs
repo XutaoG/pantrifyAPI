@@ -12,6 +12,10 @@ namespace Pantrify.API.Dtos
 
 		public int NumServings { get; set; }
 
+		public DateTime DateAdded { get; set; }
+
+		public DateTime DateModified { get; set; }
+
 		public List<RecipeIngredientResponse> Ingredients { get; set; } = null!;
 
 		public List<RecipeInstructionResponse> Instructions { get; set; } = null!;

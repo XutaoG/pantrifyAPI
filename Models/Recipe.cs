@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 
 namespace Pantrify.API.Models
 {
@@ -22,6 +21,12 @@ namespace Pantrify.API.Models
 		[Required]
 		public int NumServings { get; set; }
 
+		[Required]
+		public DateTime DateAdded { get; set; }
+
+		[Required]
+		public DateTime DateModified { get; set; }
+
 		// Collection navigation containing dependents
 		public List<RecipeIngredient> Ingredients { get; set; } = null!;
 
@@ -33,5 +38,11 @@ namespace Pantrify.API.Models
 
 		[ForeignKey(nameof(User))] // Specifies property as foreign key
 		public int UserId { get; set; }
+
+		public Recipe()
+		{
+			this.DateAdded = DateTime.UtcNow;
+			this.DateModified = DateTime.UtcNow;
+		}
 	}
 }
