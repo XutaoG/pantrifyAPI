@@ -71,6 +71,20 @@ namespace Pantrify.API.Repositories
 						recipes.OrderBy(recipe => recipe.Duration) :
 						recipes.OrderByDescending(recipe => recipe.Duration);
 				}
+				// Sort by date added
+				else if (sortBy.Equals("dateAdded", StringComparison.OrdinalIgnoreCase))
+				{
+					recipes = isAscending ?? true ?
+						recipes.OrderBy(recipe => recipe.DateAdded) :
+						recipes.OrderByDescending(recipe => recipe.DateAdded);
+				}
+				// Sort by date modified
+				else if (sortBy.Equals("dateModified", StringComparison.OrdinalIgnoreCase))
+				{
+					recipes = isAscending ?? true ?
+						recipes.OrderBy(recipe => recipe.DateModified) :
+						recipes.OrderByDescending(recipe => recipe.DateModified);
+				}
 			}
 
 			return await recipes.ToListAsync();
