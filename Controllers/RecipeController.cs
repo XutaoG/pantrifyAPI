@@ -17,18 +17,21 @@ namespace Pantrify.API.Controllers
 		private readonly IRecipeRepository recipeRepository;
 		private readonly IIngredientRepository ingredientRepository;
 		private readonly JwtService jwtService;
+		private readonly CloudinaryService cloudinaryService;
 		private readonly IMapper mapper;
 
 		public RecipeController(
 			IRecipeRepository recipeRepository,
 			IIngredientRepository ingredientRepository,
 			JwtService jwtService,
+			CloudinaryService cloudinaryService,
 			IMapper mapper
 		)
 		{
 			this.recipeRepository = recipeRepository;
 			this.ingredientRepository = ingredientRepository;
 			this.jwtService = jwtService;
+			this.cloudinaryService = cloudinaryService;
 			this.mapper = mapper;
 		}
 
@@ -103,6 +106,44 @@ namespace Pantrify.API.Controllers
 			// Map Dto to model
 			Recipe recipe = this.mapper.Map<Recipe>(addRecipeRequest);
 
+			recipe.UserId = (int)userId;
+
+			// Create recipe
+			recipe = await this.recipeRepository.Create(recipe);
+
+			// Map model to Dto
+			RecipeResponse response = this.mapper.Map<RecipeResponse>(recipe);
+
+			return CreatedAtAction(nameof(GetbyId), new { id = response.Id }, response);
+		}
+
+		[HttpPost]
+		[Route("test")]
+		public async Task<IActionResult> Test(
+			[FromForm] AddRecipeRequest addRecipeRequest
+			)
+		{
+			int? userId = this.jwtService.GetUserIdFromClaims(HttpContext.User.Claims.ToList());
+
+			// Check if claim user ID exists
+			if (userId == null)
+			{
+				return Unauthorized();
+			}
+
+			// Validate model
+			if (!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+			}
+
+			// Map Dto to model
+			Recipe recipe = this.mapper.Map<Recipe>(addRecipeRequest);
+
+			// Upload images to cloudinary
+			List<RecipeImage> recipeImages = await this.cloudinaryService.UploadRecipeImages(recipe.Images);
+
+			recipe.Images = recipeImages;
 			recipe.UserId = (int)userId;
 
 			// Create recipe

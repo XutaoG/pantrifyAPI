@@ -34,7 +34,7 @@ namespace Pantrify.API.Models
 		public List<RecipeInstruction> Instructions { get; set; } = null!;
 
 		// Collection navigation containing dependents
-		public RecipeImage Image { get; set; } = null!;
+		public List<RecipeImage> Images { get; set; } = null!;
 
 		[ForeignKey(nameof(User))] // Specifies property as foreign key
 		public int UserId { get; set; }

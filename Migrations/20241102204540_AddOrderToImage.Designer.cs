@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pantrify.API.Data;
 
@@ -11,9 +12,11 @@ using Pantrify.API.Data;
 namespace pantrifyAPI.Migrations
 {
     [DbContext(typeof(PantrifyDbContext))]
-    partial class PantrifyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241102204540_AddOrderToImage")]
+    partial class AddOrderToImage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -113,7 +116,8 @@ namespace pantrifyAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RecipeId");
+                    b.HasIndex("RecipeId")
+                        .IsUnique();
 
                     b.ToTable("RecipeImage");
                 });
@@ -236,8 +240,8 @@ namespace pantrifyAPI.Migrations
             modelBuilder.Entity("Pantrify.API.Models.RecipeImage", b =>
                 {
                     b.HasOne("Pantrify.API.Models.Recipe", "Recipe")
-                        .WithMany("Images")
-                        .HasForeignKey("RecipeId")
+                        .WithOne("Image")
+                        .HasForeignKey("Pantrify.API.Models.RecipeImage", "RecipeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -268,7 +272,8 @@ namespace pantrifyAPI.Migrations
 
             modelBuilder.Entity("Pantrify.API.Models.Recipe", b =>
                 {
-                    b.Navigation("Images");
+                    b.Navigation("Image")
+                        .IsRequired();
 
                     b.Navigation("Ingredients");
 

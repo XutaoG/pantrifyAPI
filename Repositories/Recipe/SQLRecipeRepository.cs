@@ -28,6 +28,7 @@ namespace Pantrify.API.Repositories
 				recipe.Name.ToLower().Contains(name == null ? "" : name.ToLower()))
 				.Include("Instructions")
 				.Include("Ingredients")
+				.Include("Images")
 				.AsQueryable();
 
 			// Filter difficulty
@@ -80,6 +81,7 @@ namespace Pantrify.API.Repositories
 			return await this.dbContext.Recipes.Where(recipe => recipe.Id == id)
 				.Include("Instructions")
 				.Include("Ingredients")
+				.Include("Images")
 				.FirstOrDefaultAsync();
 		}
 

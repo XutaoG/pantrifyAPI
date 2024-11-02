@@ -37,11 +37,10 @@ namespace Pantrify
 			// Add AutoMapper to container
 			builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
-			// Add PasswordHasherService to container
+			// Add services to container
 			builder.Services.AddSingleton(typeof(PasswordHashService));
-
-			// Add JwtService to container
 			builder.Services.AddTransient(typeof(JwtService));
+			builder.Services.AddSingleton(typeof(CloudinaryService));
 
 			// Add JWT authentication
 			builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

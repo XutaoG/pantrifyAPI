@@ -19,6 +19,8 @@ namespace Pantrify.API.Dtos
 		public List<RecipeIngredientResponse> Ingredients { get; set; } = null!;
 
 		public List<RecipeInstructionResponse> Instructions { get; set; } = null!;
+
+		public List<RecipeImageResponse> Images { get; set; } = null!;
 	}
 
 	public class RecipeIngredientResponse
@@ -41,5 +43,14 @@ namespace Pantrify.API.Dtos
 		public int Step { get; set; }
 
 		public string Instruction { get; set; } = null!;
+	}
+
+	public class RecipeImageResponse
+	{
+		public int Id { get; set; }
+
+		public string Path { get; set; } = null!;
+
+		public int Order { get; set; }
 	}
 }

@@ -16,6 +16,9 @@ namespace Pantrify.API.Models
 		[Required]
 		public string Path { get; set; } = null!;
 
+		[Required]
+		public int Order { get; set; }
+
 		[ForeignKey(nameof(Recipe))] // Specifies property as foreign key
 		public int RecipeId { get; set; }
 
