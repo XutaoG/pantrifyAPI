@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Pantrify.API.Dtos;
 using Pantrify.API.Models;
@@ -15,18 +16,21 @@ namespace Pantrify.API.Controllers
 		private readonly ITokenRepository tokenRepository;
 		private readonly PasswordHashService passwordHasherService;
 		private readonly JwtService jwtService;
+		private readonly IMapper mapper;
 
 		public AuthController(
 			IUserRepository userRepository,
 			ITokenRepository tokenRepository,
 			PasswordHashService passwordHasherService,
-			JwtService jwtService
+			JwtService jwtService,
+			IMapper mapper
 		)
 		{
 			this.userRepository = userRepository;
 			this.tokenRepository = tokenRepository;
 			this.passwordHasherService = passwordHasherService;
 			this.jwtService = jwtService;
+			this.mapper = mapper;
 		}
 
 		[Route("sign-up")]
@@ -194,6 +198,32 @@ namespace Pantrify.API.Controllers
 
 			ModelState.AddModelError("Token", "Invalid JWT");
 			return Unauthorized(ModelState);
+		}
+
+		[Route("user")]
+		[HttpGet]
+		public async Task<IActionResult> GetUser()
+		{
+			int? userId = this.jwtService.GetUserIdFromClaims(HttpContext.User.Claims.ToList());
+
+			// Check if claim user ID exists
+			if (userId == null)
+			{
+				return Unauthorized();
+			}
+
+			User? foundUser = await this.userRepository.GetById((int)userId);
+
+			if (foundUser == null)
+			{
+				return NotFound();
+			}
+
+			// Map model to Dto
+			UserResponse response = this.mapper.Map<UserResponse>(foundUser);
+
+			// 200
+			return Ok(response);
 		}
 	}
 }

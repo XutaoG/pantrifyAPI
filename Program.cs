@@ -15,6 +15,18 @@ namespace Pantrify
 		{
 			var builder = WebApplication.CreateBuilder(args);
 
+			// Add CORS
+			builder.Services.AddCors(options =>
+			{
+				options.AddPolicy("allowedOrigins", policy =>
+				{
+					policy.WithOrigins("http://localhost:3000")
+						.AllowAnyHeader()
+						.AllowAnyMethod()
+						.AllowCredentials();
+				});
+			});
+
 			// Add controllers to container
 			builder.Services.AddControllers();
 
@@ -84,6 +96,8 @@ namespace Pantrify
 			}
 
 			app.UseHttpsRedirection();
+
+			app.UseCors("allowedOrigins");
 
 			// Add authentication and authorization middleware
 			app.UseAuthentication();

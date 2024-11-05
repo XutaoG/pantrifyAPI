@@ -47,6 +47,9 @@ namespace Pantrify.API.Mapping
 					Instruction = ins
 				})));
 			CreateMap<Recipe, RecipeResponse>();
+
+			// User
+			CreateMap<User, UserResponse>();
 		}
 	}
 }
