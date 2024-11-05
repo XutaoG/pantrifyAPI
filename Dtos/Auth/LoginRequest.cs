@@ -9,5 +9,8 @@ namespace Pantrify.API.Dtos
 
 		[Required]
 		public string Password { get; set; } = null!;
+
+		[Required]
+		public bool RememberMe { get; set; }
 	}
 }

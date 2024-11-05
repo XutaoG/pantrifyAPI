@@ -13,21 +13,18 @@ namespace Pantrify.API.Controllers
 	{
 		private readonly IUserRepository userRepository;
 		private readonly ITokenRepository tokenRepository;
-		private readonly IConfiguration configuration;
 		private readonly PasswordHashService passwordHasherService;
 		private readonly JwtService jwtService;
 
 		public AuthController(
 			IUserRepository userRepository,
 			ITokenRepository tokenRepository,
-			IConfiguration configuration,
 			PasswordHashService passwordHasherService,
 			JwtService jwtService
 		)
 		{
 			this.userRepository = userRepository;
 			this.tokenRepository = tokenRepository;
-			this.configuration = configuration;
 			this.passwordHasherService = passwordHasherService;
 			this.jwtService = jwtService;
 		}
@@ -88,8 +85,6 @@ namespace Pantrify.API.Controllers
 
 			JwtResponse response = new JwtResponse()
 			{
-				// Token = jwt.Token,
-				// RefreshToken = refreshToken.Token,
 				TokenExpiryTime = jwt.ExpiryTime,
 				RefreshTokenExpiryTime = refreshToken.ExpiryTime
 			};
@@ -98,8 +93,14 @@ namespace Pantrify.API.Controllers
 			CookieOptions cookieOptions = new CookieOptions()
 			{
 				HttpOnly = true,
-				SameSite = SameSiteMode.Strict
+				SameSite = SameSiteMode.Strict,
 			};
+
+			// Set persistent or non persistent cookie
+			if (loginRequest.RememberMe)
+			{
+				cookieOptions.Expires = DateTime.UtcNow.AddDays(7);
+			}
 
 			// Add JWT and refresh token in response cookie
 			HttpContext.Response.Cookies.Append("X-Access-Token", jwt.Token, cookieOptions);
@@ -170,8 +171,6 @@ namespace Pantrify.API.Controllers
 
 					JwtResponse response = new JwtResponse()
 					{
-						// Token = newJwt.Token,
-						// RefreshToken = newRefreshToken.Token,
 						TokenExpiryTime = newJwt.ExpiryTime,
 						RefreshTokenExpiryTime = newRefreshToken.ExpiryTime
 					};
@@ -180,7 +179,8 @@ namespace Pantrify.API.Controllers
 					CookieOptions cookieOptions = new CookieOptions()
 					{
 						HttpOnly = true,
-						SameSite = SameSiteMode.Strict
+						SameSite = SameSiteMode.Strict,
+						Expires = DateTime.UtcNow.AddDays(7)
 					};
 
 					// Add JWT and refresh token in response cookie
