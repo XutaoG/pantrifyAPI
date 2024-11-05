@@ -88,11 +88,22 @@ namespace Pantrify.API.Controllers
 
 			JwtResponse response = new JwtResponse()
 			{
-				Token = jwt.Token,
-				RefreshToken = refreshToken.Token,
+				// Token = jwt.Token,
+				// RefreshToken = refreshToken.Token,
 				TokenExpiryTime = jwt.ExpiryTime,
 				RefreshTokenExpiryTime = refreshToken.ExpiryTime
 			};
+
+			// Configure cookie options
+			CookieOptions cookieOptions = new CookieOptions()
+			{
+				HttpOnly = true,
+				SameSite = SameSiteMode.Strict
+			};
+
+			// Add JWT and refresh token in response cookie
+			HttpContext.Response.Cookies.Append("X-Access-Token", jwt.Token, cookieOptions);
+			HttpContext.Response.Cookies.Append("X-Refresh-Token", refreshToken.Token, cookieOptions);
 
 			// 200
 			return Ok(response);
@@ -100,10 +111,16 @@ namespace Pantrify.API.Controllers
 
 		[Route("refresh")]
 		[HttpPost]
-		public async Task<IActionResult> Refresh([FromBody] TokenRequest tokenRequest)
+		public async Task<IActionResult> Refresh()
 		{
+			if (!Request.Cookies.TryGetValue("X-Access-Token", out string? jwt) || !Request.Cookies.TryGetValue("X-Refresh-Token", out string? refreshToken))
+			{
+				ModelState.AddModelError("Token", "Missing JWT or refresh token");
+				return BadRequest();
+			}
+
 			// Get claims principal
-			ClaimsPrincipal principal = this.jwtService.GetPrincipalFromExpiredToken(tokenRequest.Token);
+			ClaimsPrincipal principal = this.jwtService.GetPrincipalFromExpiredToken(jwt);
 
 			if (principal == null)
 			{
@@ -112,9 +129,9 @@ namespace Pantrify.API.Controllers
 			}
 
 			// Get refresh token
-			RefreshToken? refreshToken = await this.tokenRepository.GetByToken(tokenRequest.RefreshToken);
+			RefreshToken? foundRefreshToken = await this.tokenRepository.GetByToken(refreshToken);
 
-			if (refreshToken == null || refreshToken.ExpiryTime < DateTime.UtcNow)
+			if (foundRefreshToken == null || foundRefreshToken.ExpiryTime < DateTime.UtcNow)
 			{
 				ModelState.AddModelError("Refresh token", "Invalid refresh token");
 				return Unauthorized(ModelState);
@@ -133,7 +150,7 @@ namespace Pantrify.API.Controllers
 			// Check user ID and refresh token user ID
 			if (int.TryParse(userIdClaim.Value, out int claimUserId))
 			{
-				if (claimUserId == refreshToken.UserId)
+				if (claimUserId == foundRefreshToken.UserId)
 				{
 					User? user = await this.userRepository.GetById(claimUserId);
 					if (user == null)
@@ -149,15 +166,26 @@ namespace Pantrify.API.Controllers
 					RefreshToken newRefreshToken = await this.jwtService.GenerateRefreshTokenAsync(user);
 
 					// Delete old refresh token
-					await this.tokenRepository.DeleteByToken(refreshToken.Token);
+					await this.tokenRepository.DeleteByToken(foundRefreshToken.Token);
 
 					JwtResponse response = new JwtResponse()
 					{
-						Token = newJwt.Token,
-						RefreshToken = newRefreshToken.Token,
+						// Token = newJwt.Token,
+						// RefreshToken = newRefreshToken.Token,
 						TokenExpiryTime = newJwt.ExpiryTime,
 						RefreshTokenExpiryTime = newRefreshToken.ExpiryTime
 					};
+
+					// Configure cookie options
+					CookieOptions cookieOptions = new CookieOptions()
+					{
+						HttpOnly = true,
+						SameSite = SameSiteMode.Strict
+					};
+
+					// Add JWT and refresh token in response cookie
+					Response.Cookies.Append("X-Access-Token", newJwt.Token, cookieOptions);
+					Response.Cookies.Append("X-Refresh-Token", newRefreshToken.Token, cookieOptions);
 
 					// 200
 					return Ok(response);

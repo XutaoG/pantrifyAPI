@@ -47,6 +47,7 @@ namespace Pantrify
 			.AddJwtBearer(options =>
 			{
 				options.SaveToken = true;
+				// Set JWT validation
 				options.TokenValidationParameters = new TokenValidationParameters()
 				{
 					ValidateIssuerSigningKey = true,
@@ -57,6 +58,20 @@ namespace Pantrify
 					ValidateAudience = false,
 					ValidateIssuer = false,
 					ClockSkew = TimeSpan.Zero
+				};
+
+				options.Events = new JwtBearerEvents
+				{
+					// Extract token from cookie header
+					OnMessageReceived = context =>
+					{
+						if (context.Request.Cookies.ContainsKey("X-Access-Token"))
+						{
+							context.Token = context.Request.Cookies["X-Access-Token"];
+						}
+
+						return Task.CompletedTask;
+					}
 				};
 			});
 
