@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pantrify.API.Dtos;
 using Pantrify.API.Models;
@@ -39,7 +40,6 @@ namespace Pantrify.API.Controllers
 		{
 			if (!ModelState.IsValid)
 			{
-				// 400
 				return BadRequest(ModelState);
 			}
 
@@ -57,11 +57,11 @@ namespace Pantrify.API.Controllers
 			{
 				ModelState.AddModelError("Email", "Email already used");
 
-				// 400
-				return BadRequest(ModelState);
+				// return BadRequest(ModelState);
+
+				return Conflict(ModelState);
 			}
 
-			// 200
 			return Ok();
 		}
 
@@ -71,7 +71,6 @@ namespace Pantrify.API.Controllers
 		{
 			if (!ModelState.IsValid)
 			{
-				// 400
 				return BadRequest(ModelState);
 			}
 
@@ -79,7 +78,6 @@ namespace Pantrify.API.Controllers
 
 			if (user == null)
 			{
-				// 401
 				return Unauthorized();
 			}
 
@@ -89,9 +87,12 @@ namespace Pantrify.API.Controllers
 
 			JwtResponse response = new JwtResponse()
 			{
+				// Token = jwt.Token,
+				// RefreshToken = refreshToken.Token,
 				TokenExpiryTime = jwt.ExpiryTime,
 				RefreshTokenExpiryTime = refreshToken.ExpiryTime
 			};
+
 
 			// Configure cookie options
 			CookieOptions cookieOptions = new CookieOptions()
@@ -110,7 +111,7 @@ namespace Pantrify.API.Controllers
 			HttpContext.Response.Cookies.Append("X-Access-Token", jwt.Token, cookieOptions);
 			HttpContext.Response.Cookies.Append("X-Refresh-Token", refreshToken.Token, cookieOptions);
 
-			// 200
+
 			return Ok(response);
 		}
 
@@ -175,9 +176,12 @@ namespace Pantrify.API.Controllers
 
 					JwtResponse response = new JwtResponse()
 					{
+						// Token = newJwt.Token,
+						// RefreshToken = newRefreshToken.Token,
 						TokenExpiryTime = newJwt.ExpiryTime,
 						RefreshTokenExpiryTime = newRefreshToken.ExpiryTime
 					};
+
 
 					// Configure cookie options
 					CookieOptions cookieOptions = new CookieOptions()
@@ -191,7 +195,7 @@ namespace Pantrify.API.Controllers
 					Response.Cookies.Append("X-Access-Token", newJwt.Token, cookieOptions);
 					Response.Cookies.Append("X-Refresh-Token", newRefreshToken.Token, cookieOptions);
 
-					// 200
+
 					return Ok(response);
 				}
 			}
@@ -202,6 +206,7 @@ namespace Pantrify.API.Controllers
 
 		[Route("user")]
 		[HttpGet]
+		[Authorize]
 		public async Task<IActionResult> GetUser()
 		{
 			int? userId = this.jwtService.GetUserIdFromClaims(HttpContext.User.Claims.ToList());
@@ -222,8 +227,29 @@ namespace Pantrify.API.Controllers
 			// Map model to Dto
 			UserResponse response = this.mapper.Map<UserResponse>(foundUser);
 
-			// 200
 			return Ok(response);
+		}
+
+		[Route("logout")]
+		[HttpPost]
+		public async Task<IActionResult> Logout()
+		{
+			if (Request.Cookies.TryGetValue("X-Refresh-Token", out string? refreshToken))
+			{
+				// Get refresh token
+				RefreshToken? foundRefreshToken = await this.tokenRepository.GetByToken(refreshToken);
+
+				if (foundRefreshToken != null)
+				{
+					// Delete refresh token
+					await this.tokenRepository.DeleteByToken(foundRefreshToken.Token);
+				}
+			}
+
+			HttpContext.Response.Cookies.Delete("X-Access-Token");
+			HttpContext.Response.Cookies.Delete("X-Refresh-Token");
+
+			return Ok();
 		}
 	}
 }
