@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -93,7 +94,6 @@ namespace Pantrify.API.Controllers
 				RefreshTokenExpiryTime = refreshToken.ExpiryTime
 			};
 
-
 			// Configure cookie options
 			CookieOptions cookieOptions = new CookieOptions()
 			{
@@ -108,9 +108,8 @@ namespace Pantrify.API.Controllers
 			}
 
 			// Add JWT and refresh token in response cookie
-			HttpContext.Response.Cookies.Append("X-Access-Token", jwt.Token, cookieOptions);
 			HttpContext.Response.Cookies.Append("X-Refresh-Token", refreshToken.Token, cookieOptions);
-
+			HttpContext.Response.Cookies.Append("X-Access-Token", jwt.Token, cookieOptions);
 
 			return Ok(response);
 		}
@@ -166,35 +165,28 @@ namespace Pantrify.API.Controllers
 						return NotFound(ModelState);
 					}
 
-					// Generate new JWT
-					Jwt newJwt = this.jwtService.GenerateJwt(user);
-					// Generate new refresh token
-					RefreshToken newRefreshToken = await this.jwtService.GenerateRefreshTokenAsync(user);
 
-					// Delete old refresh token
-					await this.tokenRepository.DeleteByToken(foundRefreshToken.Token);
+					Jwt newJwt = this.jwtService.GenerateJwt(user);
+					RefreshToken newRefreshToken = await this.jwtService.GenerateRefreshTokenAsync(user);
 
 					JwtResponse response = new JwtResponse()
 					{
-						// Token = newJwt.Token,
-						// RefreshToken = newRefreshToken.Token,
+						// Token = jwt.Token,
+						// RefreshToken = refreshToken.Token,
 						TokenExpiryTime = newJwt.ExpiryTime,
 						RefreshTokenExpiryTime = newRefreshToken.ExpiryTime
 					};
-
 
 					// Configure cookie options
 					CookieOptions cookieOptions = new CookieOptions()
 					{
 						HttpOnly = true,
 						SameSite = SameSiteMode.Strict,
-						Expires = DateTime.UtcNow.AddDays(7)
 					};
 
 					// Add JWT and refresh token in response cookie
-					Response.Cookies.Append("X-Access-Token", newJwt.Token, cookieOptions);
-					Response.Cookies.Append("X-Refresh-Token", newRefreshToken.Token, cookieOptions);
-
+					HttpContext.Response.Cookies.Append("X-Refresh-Token", newRefreshToken.Token, cookieOptions);
+					HttpContext.Response.Cookies.Append("X-Access-Token", newJwt.Token, cookieOptions);
 
 					return Ok(response);
 				}

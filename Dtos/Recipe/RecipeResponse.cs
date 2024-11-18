@@ -6,6 +6,8 @@ namespace Pantrify.API.Dtos
 
 		public string Name { get; set; } = null!;
 
+		public string Description { get; set; } = null!;
+
 		public int Duration { get; set; }
 
 		public int Difficulty { get; set; }

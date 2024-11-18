@@ -23,7 +23,7 @@ namespace Pantrify.API.Services
 		public Jwt GenerateJwt(User user)
 		{
 			byte[] secretKey = Encoding.ASCII.GetBytes(this.configuration.GetValue<string>("secret_key") ?? "");
-			DateTime expiryTime = DateTime.UtcNow.AddMinutes(30);
+			DateTime expiryTime = DateTime.UtcNow.AddMinutes(60);
 
 			JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
 

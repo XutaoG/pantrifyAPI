@@ -3,10 +3,11 @@ using System.ComponentModel.DataAnnotations;
 namespace Pantrify.API.Dtos
 {
 	public class AddRecipeRequest
-
 	{
 		[Required]
 		public string Name { get; set; } = null!;
+
+		public string? Description { get; set; }
 
 		[Required]
 		public int Duration { get; set; }

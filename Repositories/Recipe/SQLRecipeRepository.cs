@@ -122,6 +122,7 @@ namespace Pantrify.API.Repositories
 
 			// Update recipe
 			foundRecipe.Name = recipe.Name;
+			foundRecipe.Description = recipe.Description;
 			foundRecipe.Duration = recipe.Duration;
 			foundRecipe.Difficulty = recipe.Difficulty;
 			foundRecipe.NumServings = recipe.NumServings;

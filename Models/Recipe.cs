@@ -12,6 +12,8 @@ namespace Pantrify.API.Models
 		[Required]
 		public string Name { get; set; } = null!;
 
+		public string? Description { get; set; }
+
 		[Required]
 		public int Duration { get; set; }
 
