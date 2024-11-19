@@ -7,9 +7,11 @@ namespace Pantrify.API.Models
 	[Table(nameof(RecipeIngredient))]
 	public class RecipeIngredient : IngredientBase
 	{
-		public int? Quantity { get; set; }
+		public int? QuantityWhole { get; set; }
 
-		public string? QuantityUnit { get; set; } = null!;
+		public string? QuantityFraction { get; set; }
+
+		public string? QuantityUnit { get; set; }
 
 		[ForeignKey(nameof(Recipe))] // Specifies property as foreign key
 		public int RecipeId { get; set; }

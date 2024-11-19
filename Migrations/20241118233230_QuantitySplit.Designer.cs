@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pantrify.API.Data;
 
@@ -11,9 +12,11 @@ using Pantrify.API.Data;
 namespace pantrifyAPI.Migrations
 {
     [DbContext(typeof(PantrifyDbContext))]
-    partial class PantrifyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241118233230_QuantitySplit")]
+    partial class QuantitySplit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

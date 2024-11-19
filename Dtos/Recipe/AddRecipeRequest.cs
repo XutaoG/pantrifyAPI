@@ -36,7 +36,9 @@ namespace Pantrify.API.Dtos
 		[Required]
 		public string IngredientType { get; set; } = null!;
 
-		public int? Quantity { get; set; }
+		public int? QuantityWhole { get; set; }
+
+		public string? QuantityFraction { get; set; }
 
 		public string? QuantityUnit { get; set; } = null!;
 	}
