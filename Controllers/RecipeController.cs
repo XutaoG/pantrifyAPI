@@ -87,7 +87,7 @@ namespace Pantrify.API.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Test(
+		public async Task<IActionResult> Create(
 			[FromForm] AddRecipeRequest addRecipeRequest
 			)
 		{
@@ -142,7 +142,7 @@ namespace Pantrify.API.Controllers
 
 		[HttpPut]
 		[Route("{id}")]
-		public async Task<IActionResult> UpdateById([FromRoute] int id, [FromBody] UpdateRecipeRequest updateRecipeRequest)
+		public async Task<IActionResult> UpdateById([FromRoute] int id, [FromForm] UpdateRecipeRequest updateRecipeRequest)
 		{
 			int? userId = this.jwtService.GetUserIdFromClaims(HttpContext.User.Claims.ToList());
 
@@ -160,6 +160,11 @@ namespace Pantrify.API.Controllers
 
 			// Map Dto to model
 			Recipe? recipe = this.mapper.Map<Recipe>(updateRecipeRequest);
+
+			// Upload images to cloudinary
+			List<RecipeImage> recipeImages = await this.cloudinaryService.UploadRecipeImages(recipe.Images);
+
+			recipe.Images = recipeImages;
 
 			// Update model
 			recipe = await this.recipeRepository.UpdateById(id, recipe);
@@ -215,7 +220,7 @@ namespace Pantrify.API.Controllers
 			// Check availability of each ingredients
 			for (int i = 0; i < recipe.Ingredients.Count; i++)
 			{
-				Ingredient? ingredient = await this.ingredientRepository.GetByName(recipe.Ingredients[i].Name);
+				Ingredient? ingredient = await this.ingredientRepository.GetByName(recipe.UserId, recipe.Ingredients[i].Name);
 
 				if (ingredient == null || ingredient.IsAvailable == false)
 				{

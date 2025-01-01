@@ -129,6 +129,7 @@ namespace Pantrify.API.Repositories
 			foundRecipe.Ingredients = recipe.Ingredients;
 			foundRecipe.Instructions = recipe.Instructions;
 			foundRecipe.DateModified = DateTime.UtcNow;
+			foundRecipe.Images = recipe.Images;
 
 			// Persist changes
 			await this.dbContext.SaveChangesAsync();

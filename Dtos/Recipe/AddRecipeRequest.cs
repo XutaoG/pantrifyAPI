@@ -24,8 +24,8 @@ namespace Pantrify.API.Dtos
 		[Required]
 		public List<string> Instructions { get; set; } = null!;
 
-		[Required]
-		public List<IFormFile> Images { get; set; } = null!;
+		// [Required]
+		public List<IFormFile>? Images { get; set; }
 	}
 
 	public class AddRecipeIngredientRequest

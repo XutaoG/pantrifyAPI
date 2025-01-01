@@ -35,7 +35,7 @@ namespace Pantrify.API.Mapping
 					Instruction = ins,
 				})))
 				.ForMember(dest => dest.Images,
-				opt => opt.MapFrom(src => src.Images.Select((img, i) => new RecipeImage()
+				opt => opt.MapFrom(src => src.Images!.Select((img, i) => new RecipeImage()
 				{
 					File = img,
 					Order = i + 1,
@@ -45,6 +45,11 @@ namespace Pantrify.API.Mapping
 				{
 					Step = i + 1,
 					Instruction = ins
+				}))).ForMember(dest => dest.Images,
+				opt => opt.MapFrom(src => src.Images!.Select((img, i) => new RecipeImage()
+				{
+					File = img,
+					Order = i + 1,
 				})));
 			CreateMap<Recipe, RecipeResponse>();
 

@@ -7,7 +7,7 @@ namespace Pantrify.API.Dtos
 		[Required]
 		public string Name { get; set; } = null!;
 
-		public string Description { get; set; } = null!;
+		public string? Description { get; set; } = null!;
 
 		[Required]
 		public int Duration { get; set; }
@@ -23,6 +23,8 @@ namespace Pantrify.API.Dtos
 
 		[Required]
 		public List<string> Instructions { get; set; } = null!;
+
+		public List<IFormFile>? Images { get; set; }
 	}
 
 	public class UpdateRecipeIngredientRequest

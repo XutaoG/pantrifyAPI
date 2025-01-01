@@ -101,6 +101,37 @@ namespace Pantrify.API.Controllers
 			Ingredient ingredient = this.mapper.Map<Ingredient>(addIngredientRequest);
 			ingredient.UserId = (int)userId;
 
+			// Check if ingredient already exists
+			Ingredient? foundIngredient = await this.ingredientRepository.GetByName((int)userId, ingredient.Name);
+
+			if (foundIngredient != null)
+			{
+				// Duplicate found
+
+				// If both ingredients are in available or is in cart
+				if (ingredient.IsAvailable == foundIngredient.IsAvailable || ingredient.IsInCart == foundIngredient.IsInCart)
+				{
+					ModelState.AddModelError("Ingredient", "Ingredient already exist");
+
+					return Conflict(ModelState);
+				}
+				// Ingredient name matches but in different location (available vs. in cart)
+				else
+				{
+
+					// Update model
+					foundIngredient.IsAvailable = true;
+					foundIngredient.IsInCart = true;
+
+					Ingredient? updatedIngredient = await this.ingredientRepository.UpdateById(foundIngredient.Id, foundIngredient);
+
+					// Map model to response Dto
+					IngredientResponse updateResponse = this.mapper.Map<IngredientResponse>(updatedIngredient);
+
+					return Ok(updateResponse);
+				}
+			}
+
 			// Create ingredient
 			ingredient = await this.ingredientRepository.Create(ingredient);
 
@@ -148,6 +179,22 @@ namespace Pantrify.API.Controllers
 			// Map Dto to model
 			Ingredient? ingredient = this.mapper.Map<Ingredient>(updateIngredientDto);
 
+			// Check if ingredient already exists
+			Ingredient? foundIngredients = await this.ingredientRepository.GetByName((int)userId, ingredient.Name);
+
+			if (foundIngredients != null && id != foundIngredients.Id)
+			{
+				// Duplicate found
+
+				// If both ingredients are in available
+				if (ingredient.IsAvailable == foundIngredients.IsAvailable || ingredient.IsInCart == foundIngredients.IsInCart)
+				{
+					ModelState.AddModelError("Ingredient", "Ingredient already exist");
+
+					return Conflict(ModelState);
+				}
+			}
+
 			// Update model
 			ingredient = await this.ingredientRepository.UpdateById(id, ingredient);
 
@@ -155,12 +202,6 @@ namespace Pantrify.API.Controllers
 			if (ingredient == null)
 			{
 				return NotFound();
-			}
-
-			// Check if ingredient belongs to the matching user
-			if (ingredient.UserId != userId)
-			{
-				return Unauthorized();
 			}
 
 			// Map model to response Dto
@@ -246,7 +287,7 @@ namespace Pantrify.API.Controllers
 			}
 
 			// Check if recipe ingredient exists
-			Ingredient? ingredient = await this.ingredientRepository.GetByName(addRecipeIngredientRequest.Name);
+			Ingredient? ingredient = await this.ingredientRepository.GetByName((int)userId, addRecipeIngredientRequest.Name);
 			if (ingredient != null)
 			{
 				return await this.MoveToCart(ingredient.Id);
@@ -285,7 +326,7 @@ namespace Pantrify.API.Controllers
 			}
 
 			// Check if recipe ingredient exists
-			Ingredient? ingredient = await this.ingredientRepository.GetByName(addRecipeIngredientRequest.Name);
+			Ingredient? ingredient = await this.ingredientRepository.GetByName((int)userId, addRecipeIngredientRequest.Name);
 			if (ingredient != null)
 			{
 				return await this.MoveToInventory(ingredient.Id);
