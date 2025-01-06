@@ -37,13 +37,13 @@ namespace Pantrify.API.Repositories
 			}
 
 			// Filter by inventory availability
-			if (isAvailable != null)
+			if (isAvailable.HasValue)
 			{
 				ingredients = ingredients.Where(ing => ing.IsAvailable == isAvailable);
 			}
 
 			// Filter by cart availability
-			if (isInCart != null)
+			if (isInCart.HasValue)
 			{
 				ingredients = ingredients.Where(ing => ing.IsInCart == isInCart);
 			}

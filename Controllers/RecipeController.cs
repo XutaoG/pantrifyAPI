@@ -222,22 +222,28 @@ namespace Pantrify.API.Controllers
 			{
 				Ingredient? ingredient = await this.ingredientRepository.GetByName(recipe.UserId, recipe.Ingredients[i].Name);
 
+				IngredientAvailabilityResponse availability = new()
+				{
+					Id = recipe.Ingredients[i].Id,
+					Name = recipe.Ingredients[i].Name,
+					IngredientType = recipe.Ingredients[i].IngredientType,
+					QuantityWhole = recipe.Ingredients[i].QuantityWhole,
+					QuantityFraction = recipe.Ingredients[i].QuantityFraction,
+					QuantityUnit = recipe.Ingredients[i].QuantityUnit
+				};
+
 				if (ingredient == null || ingredient.IsAvailable == false)
 				{
-					response.Add(new IngredientAvailabilityResponse()
-					{
-						Name = recipe.Ingredients[i].Name,
-						Availability = false,
-					});
+					availability.IsAvailable = false;
+					availability.IngredientId = null;
 				}
 				else
 				{
-					response.Add(new IngredientAvailabilityResponse()
-					{
-						Name = recipe.Ingredients[i].Name,
-						Availability = true,
-					});
+					availability.IsAvailable = true;
+					availability.IngredientId = ingredient.Id;
 				}
+
+				response.Add(availability);
 			}
 
 			return Ok(response);

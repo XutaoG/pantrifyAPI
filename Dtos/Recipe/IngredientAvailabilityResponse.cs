@@ -1,9 +1,9 @@
 namespace Pantrify.API.Dtos
 {
-	public class IngredientAvailabilityResponse
+	public class IngredientAvailabilityResponse : RecipeIngredientResponse
 	{
-		public string Name { get; set; } = null!;
+		public bool IsAvailable { get; set; }
 
-		public bool Availability { get; set; }
+		public int? IngredientId { get; set; }
 	}
 }

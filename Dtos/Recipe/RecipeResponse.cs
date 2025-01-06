@@ -37,7 +37,7 @@ namespace Pantrify.API.Dtos
 
 		public string? QuantityFraction { get; set; }
 
-		public string QuantityUnit { get; set; } = null!;
+		public string? QuantityUnit { get; set; }
 	}
 
 	public class RecipeInstructionResponse
