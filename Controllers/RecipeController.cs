@@ -232,14 +232,16 @@ namespace Pantrify.API.Controllers
 					QuantityUnit = recipe.Ingredients[i].QuantityUnit
 				};
 
-				if (ingredient == null || ingredient.IsAvailable == false)
+				if (ingredient == null)
 				{
 					availability.IsAvailable = false;
+					availability.IsInCart = false;
 					availability.IngredientId = null;
 				}
 				else
 				{
-					availability.IsAvailable = true;
+					availability.IsAvailable = ingredient.IsAvailable;
+					availability.IsInCart = ingredient.IsInCart;
 					availability.IngredientId = ingredient.Id;
 				}
 
